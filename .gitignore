@@ -1,0 +1,423 @@
+# ==============================================
+# COMPREHENSIVE SECURITY .GITIGNORE
+# ==============================================
+# Guardian-recommended security practices for MCP Fallback Scripts
+# Based on NIST, OWASP, and industry security standards
+
+# ==============================================
+# CREDENTIALS & SECRETS (HIGH PRIORITY)
+# ==============================================
+# Environment files with API keys and session strings
+telegram_manager.env
+*.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
+
+# Secret management files
+secrets/
+*.secrets
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# Credential files
+api_keys.json
+credentials.json
+config.json
+private_key.json
+service_account.json
+oauth_credentials.json
+
+# Session files and authentication data
+*.session
+*.session-journal
+telethon.session*
+session_*
+auth_tokens.json
+access_tokens.json
+refresh_tokens.json
+
+# AWS/Azure/GCP credentials
+.aws/
+.azure/
+gcloud-service-account.json
+*.pem
+*.key
+
+# ==============================================
+# TELEGRAM SPECIFIC (HIGH PRIORITY)
+# ==============================================
+# Telegram session and configuration
+telegram_*.env
+telegram_config.json
+telegram_credentials.json
+*.telegram_session
+
+# Telegram logs and debugging
+telegram_errors.log
+telegram_debug.log
+telegram_*.log
+
+# Telegram bot data
+bot_token.txt
+bot_credentials.json
+webhook_config.json
+
+# ==============================================
+# RUNTIME STATE & TEMPORARY FILES
+# ==============================================
+# Temporary and runtime files
+/tmp/telegram_manager/
+/tmp/fallback_scripts/
+*.log
+*.pid
+*.tmp
+*.temp
+*.lock
+*.sock
+
+# Cache and state files
+*.cache
+*.state
+.state/
+current_state.json
+health.log
+metrics.json
+monitoring_data.json
+
+# Backup and rollback files
+rollback_points/
+*.backup
+*.bak
+*.old
+*.orig
+
+# Process files
+*.daemon
+*.service
+*.socket
+
+# ==============================================
+# CONFIGURATION FILES (MEDIUM PRIORITY)
+# ==============================================
+# Configuration files that may contain sensitive data
+config/local_config.json
+config/secrets/
+config/production.json
+config/staging.json
+config/development.json
+
+# User-specific configuration
+user_config.json
+local_settings.json
+settings.local.json
+
+# MCP specific configuration
+mcp_config.json
+server_config.json
+client_config.json
+
+# ==============================================
+# DATABASE & STORAGE
+# ==============================================
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Data files
+*.data
+*.dat
+data/
+storage/
+uploads/
+temp_uploads/
+file_uploads/
+
+# ==============================================
+# LOGS & MONITORING
+# ==============================================
+# Log files
+logs/
+*.log
+log/
+*.out
+*.err
+
+# Monitoring and metrics
+metrics/
+monitoring/
+performance_logs/
+audit_logs/
+security_logs/
+
+# ==============================================
+# PYTHON ARTIFACTS
+# ==============================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.virtualenv/
+.venv/
+
+# Python package manager
+pip-log.txt
+pip-delete-this-directory.txt
+requirements.txt.bak
+Pipfile.lock
+poetry.lock
+
+# ==============================================
+# TESTING & CODE COVERAGE
+# ==============================================
+# Test output and artifacts
+test_output/
+*.test
+*.tests
+test_results/
+coverage.xml
+*.cover
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+coverage/
+test_reports/
+
+# ==============================================
+# BUILD & DEPLOYMENT
+# ==============================================
+# Build artifacts
+build/
+dist/
+out/
+target/
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Deployment files
+deploy/
+deployment/
+*.deploy
+*.deployed
+
+# ==============================================
+# IDE & EDITOR FILES
+# ==============================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ==============================================
+# OPERATING SYSTEM FILES
+# ==============================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.nfs*
+
+# ==============================================
+# BACKUP & ARCHIVE FILES
+# ==============================================
+# Backup files
+*.backup
+*.bak
+*.old
+*.orig
+*.save
+*.save1
+*.save2
+
+# Archive files
+*.zip
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.rar
+*.7z
+
+# ==============================================
+# NETWORK & SECURITY
+# ==============================================
+# SSL/TLS certificates
+*.crt
+*.cert
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Network configuration
+network_config.json
+proxy_config.json
+firewall_rules.json
+
+# Security scanning
+security_scan_results.json
+vulnerability_report.json
+
+# ==============================================
+# DOCKER & CONTAINERS
+# ==============================================
+# Docker files
+.dockerignore
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Container volumes
+volumes/
+data_volumes/
+
+# ==============================================
+# DOCUMENTATION & REPORTS
+# ==============================================
+# Sensitive documentation
+*_sensitive.md
+*_secret.md
+*_private.md
+
+# Audit and compliance
+audit_report.json
+compliance_report.json
+
+# ==============================================
+# DEVELOPER TOOLS
+# ==============================================
+# Git hooks
+.git/hooks/
+.pre-commit-config.yaml
+
+# Version control
+.git/
+.svn/
+.hg/
+
+# Package managers
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==============================================
+# MISCELLANEOUS SECURITY
+# ==============================================
+# Temporary files
+*.tmp
+*.temp
+*.cache
+*.lock
+
+# Process information
+process_info.json
+system_info.json
+
+# User data
+user_data.json
+user_profiles.json
+
+# ==============================================
+# CUSTOM PATTERNS FOR PROJECT
+# ==============================================
+# Project-specific sensitive files
+*_config.json
+*_credentials.json
+*_secrets.json
+*_tokens.json
+
+# Debug files
+debug.log
+debug_output.json
+stack_trace.log
+
+# Session data
+session_data.json
+user_sessions.json
+
+# API endpoints and URLs
+api_endpoints.json
+service_urls.json
+
+# ==============================================
+# ALLOWED FILES (EXCEPTIONS)
+# ==============================================
+# Note: Files that should be committed despite patterns
+# !important_template_file.json
+# !README.md
