@@ -2,10 +2,22 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
-- [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Updated in recent commit*
+- [.env](file://.env) - *Centralized configuration file added*
+- [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh) - *Error handling validation*
+- [.gitignore](file://.gitignore) - *Security enhancements in recent commit*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Corrected variable name from `TELEGM_API_HASH` to `TELEGRAM_API_HASH` based on actual implementation
+- Updated configuration loading mechanism to reflect unified `.env` file usage
+- Added documentation for new configuration variables including Google Drive and user ID settings
+- Enhanced security considerations with updated file permission guidance and comprehensive `.gitignore` rules
+- Added new section on repository hygiene and security practices
+- Updated diagram sources to reflect current implementation
+- Fixed outdated information about configuration parsing logic
 
 ## Table of Contents
 1. [Configuration Overview](#configuration-overview)
@@ -28,7 +40,7 @@ The `.env` file follows standard environment variable syntax with `KEY=VALUE` pa
 
 ## Environment Variables
 
-The system relies on three essential configuration variables stored in the `.env` file:
+The system relies on several essential configuration variables stored in the `.env` file:
 
 **:TELEGRAM_API_ID**
 - **Purpose**: Unique identifier assigned by Telegram when creating a Telegram API project
@@ -36,12 +48,12 @@ The system relies on three essential configuration variables stored in the `.env
 - **Source**: Obtained from https://my.telegram.org/apps after creating a new application
 - **Security Level**: Sensitive - should not be exposed publicly
 
-**:TELEGM_API_HASH**
+**:TELEGRAM_API_HASH**
 - **Purpose**: Secret hash key associated with the API ID for authentication
 - **Format Requirements**: 32-character hexadecimal string (e.g., "a1b2c3d4e5f678901234567890abcdef")
 - **Source**: Generated automatically when creating a Telegram API project
 - **Security Level**: Highly sensitive - must be kept confidential
-- **Note**: There appears to be a typo in the variable name (`TELEGM_API_HASH` instead of `TELEGRAM_API_HASH`) that may require correction in the codebase
+- **Note**: The variable name has been corrected from `TELEGM_API_HASH` to `TELEGRAM_API_HASH` to match the actual implementation
 
 **:TELEGRAM_SESSION**
 - **Purpose**: Encoded session string that maintains login state with Telegram
@@ -49,9 +61,71 @@ The system relies on three essential configuration variables stored in the `.env
 - **Source**: Automatically generated during first authentication or manually created
 - **Security Level**: Highly sensitive - equivalent to account credentials
 
+**:TELEGRAM_USER_ID**
+- **Purpose**: Identifier for the authenticated Telegram user
+- **Format Requirements**: Positive integer (e.g., 5282615364)
+- **Source**: Can be obtained through Telegram API or user profile
+- **Security Level**: Sensitive - personal identifier
+
+**:DEFAULT_CHANNEL**
+- **Purpose**: Default Telegram channel to use when none specified
+- **Format Requirements**: Valid channel identifier starting with @ (e.g., "@aiclubsweggs")
+- **Security Level**: Public - non-sensitive
+
+**:DEFAULT_LIMIT**
+- **Purpose**: Default number of messages to fetch when limit not specified
+- **Format Requirements**: Integer between 1 and 1000
+- **Security Level**: Public - non-sensitive
+
+**:GDRIVE_REMOTE_NAME**
+- **Purpose**: Name of the Google Drive remote in rclone configuration
+- **Format Requirements**: String matching rclone remote name
+- **Security Level**: Low sensitivity
+
+**:GDRIVE_MOUNT_PATH**
+- **Purpose**: Local filesystem path where Google Drive is mounted
+- **Format Requirements**: Valid absolute path
+- **Security Level**: Medium sensitivity - system path information
+
+**:GDRIVE_CACHE_DIR**
+- **Purpose**: Directory for temporary rclone cache files
+- **Format Requirements**: Valid absolute path
+- **Security Level**: Low sensitivity
+
+**:GDRIVE_CONFIG_DIR**
+- **Purpose**: Directory containing rclone configuration files
+- **Format Requirements**: Valid absolute path
+- **Security Level**: Medium sensitivity
+
+**:PROJECT_ROOT**
+- **Purpose**: Base directory for the project
+- **Format Requirements**: Valid absolute path
+- **Security Level**: Low sensitivity
+
+**:GOOGLE_CLIENT_ID**
+- **Purpose**: OAuth2 client ID for Google API authentication
+- **Format Requirements**: String in format "numbers-projectid.apps.googleusercontent.com"
+- **Security Level**: Sensitive - should not be exposed publicly
+
+**:GOOGLE_CLIENT_SECRET**
+- **Purpose**: OAuth2 client secret for Google API authentication
+- **Format Requirements**: String starting with "GOCSPX-"
+- **Security Level**: Highly sensitive - must be kept confidential
+
+**:GOOGLE_PROJECT_ID**
+- **Purpose**: Google Cloud project identifier
+- **Format Requirements**: String in format "projectname-number"
+- **Security Level**: Medium sensitivity
+
+**:GOOGLE_CREDENTIALS_FILE**
+- **Purpose**: Path to JSON file containing Google OAuth2 credentials
+- **Format Requirements**: Valid absolute path to JSON file
+- **Security Level**: Highly sensitive
+
 These variables are loaded by both Bash scripts and Python modules through direct file parsing, avoiding reliance on the system's environment variables to prevent accidental exposure.
 
 **Section sources**
+- [.env](file://.env)
 - [telegram_manager.sh](file://telegram_manager.sh#L65-L66)
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L30-L40)
 
@@ -76,20 +150,51 @@ To generate the required configuration values:
    ```
    - This generates a secure, encoded string representing your authenticated session
 
-3. **Create .env File**:
+3. **Obtain Google Drive Credentials**:
+   - Set up Google Drive API through Google Cloud Console
+   - Create OAuth2 credentials (Client ID and Client Secret)
+   - Configure rclone with `rclone config`
+   - Note the remote name and configuration directory
+
+4. **Create .env File**:
    ```
-   TELEGRAM_API_ID=1234567
-   TELEGM_API_HASH=a1b2c3d4e5f678901234567890abcdef
-   TELEGRAM_SESSION=your-generated-session-string
+   # Telegram API credentials
+   TELEGRAM_API_ID="29950132"
+   TELEGRAM_API_HASH="e0bf78283481e2341805e3e4e90d289a"
+   TELEGRAM_USER_ID="5282615364"
+   
+   # Session data
+   TELEGRAM_SESSION="1ApWapzMBu4PfiXOaKlWyf87-hEiVPCmh152Zt4x2areHOfSfMNDENrJBepoLDZBGqqwrfPvo4zeDB6M8jZZkgUy8pwU9Ba67fDMlnIkESlhbX_aJFLuzbfbd3IwSYh60pLsa0mk8huWxXwHpVNDBeISwp4uGxqF6R_lxWBv_4l3pU3szXcJPS4kw9cTXZkwazvH28AOteP400dazpNpyEt2MbB56GIl9r5B7vQLcATUSW0rvd5-fWF_u2aw243XIHs7H39e_pJt2u0encXQM2Ca7X992Aad2WuHQDv7rDf1CuOO5s8UDZpvxc7ul4W53-PHyEguqLorV1uURpJH6HDDchK4WiTI="
+   
+   # Default channels and limits
+   DEFAULT_CHANNEL="@aiclubsweggs"
+   DEFAULT_LIMIT="5"
+   
+   # Google Drive configuration
+   GDRIVE_REMOTE_NAME=mydrive
+   GDRIVE_MOUNT_PATH=/home/almaz/gdrive_mount
+   GDRIVE_CACHE_DIR=/tmp/gdrive_cache
+   GDRIVE_CONFIG_DIR=/home/almaz/.config/rclone
+   
+   # Project configuration
+   PROJECT_ROOT=/home/almaz/zoo/gdrive_access
+   
+   # Google OAuth2 credentials
+   GOOGLE_CLIENT_ID=1085816236005-rrgavnu2odcvbrofa31o6le9ndacjc7o.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=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
+   GOOGLE_PROJECT_ID=pivotal-nebula-471003-n2
+   GOOGLE_CREDENTIALS_FILE=/home/almaz/.config/rclone/google_credentials.json
    ```
 
-4. **Secure Storage**:
+5. **Secure Storage**:
    - Set file permissions to 600: `chmod 600 .env`
    - Add `.env` to `.gitignore` to prevent accidental commits
    - Never share the `.env` file or its contents
    - Consider using a password manager for backup
+   - Store Google credentials securely and rotate periodically
 
 **Section sources**
+- [.env](file://.env)
 - [telegram_manager.sh](file://telegram_manager.sh#L65-L66)
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L30-L40)
 
@@ -170,16 +275,24 @@ The configuration system implements several security measures:
 - Prevents information leakage about valid vs. invalid credentials
 - Missing configuration variables are detected early
 
+**:Repository Hygiene**
+- The `.gitignore` file contains comprehensive rules to prevent accidental exposure of sensitive files
+- Includes patterns for environment files, session files, credentials, logs, and cache directories
+- Specifically excludes `.env` and related files to ensure they are never committed to version control
+- Covers various types of sensitive files including API keys, certificates, and authentication tokens
+
 **:Best Practices**
 - Never commit `.env` files to version control
 - Use different API credentials for different environments
 - Regularly audit and rotate credentials
 - Monitor for unauthorized access attempts
 - Backup credentials securely
+- Store Google OAuth2 credentials with the same level of protection as Telegram credentials
 
 **Section sources**
 - [telegram_manager.sh](file://telegram_manager.sh#L65-L66)
 - [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh#L72)
+- [.gitignore](file://.gitignore)
 
 ## Multi-Environment Configuration Management
 
@@ -211,7 +324,13 @@ For managing configurations across different environments:
 - Isolate test sessions from production
 - Automate credential setup in CI/CD pipelines
 
+**:Google Drive Configuration**
+- Use separate Google Cloud projects for different environments
+- Configure different rclone remotes for each environment
+- Maintain separate mount points and cache directories
+
 **Section sources**
+- [.env](file://.env)
 - [telegram_manager.sh](file://telegram_manager.sh#L65-L66)
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L30-L40)
 

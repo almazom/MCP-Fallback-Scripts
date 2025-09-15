@@ -2,13 +2,26 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
-- [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py)
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py)
-- [telegram_manager.sh](file://telegram_manager.sh)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in recent commit with TTL rules and cleanup logic*
+- [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py) - *Added in recent commit with smart caching implementation*
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Modified to support cache validation and border detection*
+- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py) - *New utility for basic cache freshness checks*
+- [telegram_fetch_large.py](file://scripts/telegram_tools/core/telegram_fetch_large.py) - *Updated in recent commit with improved cache handling*
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in recent commit with optimized cache handling*
+- [anchors.json](file://telegram_cache/anchors.json) - *Updated in recent commit with new anchor data*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated TTL-based cache invalidation strategy with new filter type handling
+- Enhanced cache freshness validation logic based on updated `is_cache_valid` function
+- Added details on smart cache mechanism implementation from `telegram_smart_cache.py`
+- Included new information about boundary detection and auto-fetch logic in filtering
+- Updated cache lifecycle management with new command-line interface details
+- Added new section on simple boundary check utility
+- Removed outdated references to non-existent files and corrected file paths
+- Updated cache management in `telegram_manager.sh` with improved cache handling logic
+- Added information about temporal anchors and anchor data management
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -20,7 +33,9 @@
 7. [Smart Cache Mechanism Implementation](#smart-cache-mechanism-implementation)
 8. [Cache Lifecycle Management](#cache-lifecycle-management)
 9. [Common Issues and Recovery Procedures](#common-issues-and-recovery-procedures)
-10. [Conclusion](#conclusion)
+10. [Simple Boundary Check Utility](#simple-boundary-check-utility)
+11. [Temporal Anchors and Boundary Detection](#temporal-anchors-and-boundary-detection)
+12. [Conclusion](#conclusion)
 
 ## Introduction
 The caching system in this Telegram message processing framework is designed to optimize performance by minimizing redundant API calls while ensuring data freshness. The system implements an intelligent caching strategy that balances efficiency with accuracy, particularly important when dealing with time-sensitive message data. This document details the architecture, implementation, and operational characteristics of the caching system, focusing on its TTL-based invalidation, smart fetching mechanisms, and integration with other components in the workflow.
@@ -64,7 +79,7 @@ The TTL rules are defined as follows:
 - **Recent messages** (last 7 days): 60 minutes TTL - balancing freshness with performance
 - **Archive messages** (older than 7 days): 1440 minutes (24 hours) TTL - assuming older data is stable
 
-The TTL determination is context-aware, with the system analyzing the filter type to select the appropriate expiration rule. For example, when filtering by "today" or "yesterday", the system applies the shorter TTLs, while specific date filters or longer time ranges trigger the archive TTL.
+The TTL determination is context-aware, with the system analyzing the filter type to select the appropriate expiration rule. For example, when filtering by "today" or "yesterday", the system applies the shorter TTLs, while specific date filters or longer time ranges trigger the archive TTL. The implementation also handles dynamic filter types like "last:N" days, applying recent TTL for N ≤ 7 and archive TTL for N > 7.
 
 ```mermaid
 classDiagram
@@ -139,6 +154,7 @@ Cache files are structured as JSON documents with a consistent schema that inclu
   - Time range specifications (for smart caching)
   - Filter type used
   - Scan completion status
+  - Total messages scanned
 
 - **messages**: Array of message objects, each containing:
   - Message ID
@@ -225,7 +241,7 @@ The implementation works by:
 4. Including only messages within the specified time range
 5. Sorting messages chronologically before caching
 
-This approach ensures that all messages within the requested time period are captured, even if they are not contiguous in the message history. The mechanism also includes safety checks to prevent infinite loops during the scanning process.
+This approach ensures that all messages within the requested time period are captured, even if they are not contiguous in the message history. The mechanism also includes safety checks to prevent infinite loops during the scanning process, including a maximum message scan limit of 1000 messages.
 
 ```mermaid
 flowchart TD
@@ -253,7 +269,7 @@ style SaveCache fill:#8f8,color:#fff
 ## Cache Lifecycle Management
 The system provides comprehensive tools for managing the entire cache lifecycle, including creation, validation, and cleanup operations. These operations are exposed through both direct script execution and the unified `telegram_manager.sh` interface.
 
-Cache creation occurs automatically when data is fetched, either through simple fetching or smart caching. Validation is performed transparently when filtering messages, with stale caches automatically refreshed. Cleanup operations remove older cache files while preserving a configurable number of recent versions per channel.
+Cache creation occurs automatically when data is fetched, either through simple fetching or smart caching. Validation is performed transparently when filtering messages, with stale caches automatically refreshed. Cleanup operations remove older cache files while preserving a configurable number of recent versions per channel (default: 3).
 
 The lifecycle management functions include:
 - **Creation**: Automatic during fetch operations with timestamped filenames
@@ -303,6 +319,61 @@ The system also provides diagnostic tools like the cache information display and
 **Section sources**
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L44-L99)
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L109-L148)
+
+## Simple Boundary Check Utility
+A new utility script, `simple_boundary_check.py`, has been introduced to provide basic cache freshness checking with a simple interface. This script implements a KISS (Keep It Simple, Stupid) principle approach to cache validation, checking if the most recent cache file is older than a specified maximum age.
+
+The utility provides:
+- Simple command-line interface for cache freshness checking
+- Configurable maximum age threshold (default: 60 minutes)
+- Exit codes for programmatic use (0 for fresh, 1 for stale or no cache)
+- Output in simple text format ("fresh", "stale", or "no_cache")
+
+This utility is designed for integration into monitoring systems and simple automation scripts where full cache validation complexity is not required.
+
+**Section sources**
+- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py#L1-L47)
+
+## Temporal Anchors and Boundary Detection
+The system now incorporates temporal anchors to improve boundary detection accuracy and ensure message continuity across days. Temporal anchors are stored in `anchors.json` and contain metadata about the last message of each day, which serves as a reference point for subsequent fetch operations.
+
+The temporal anchor system provides:
+- Persistent storage of daily message boundaries in `anchors.json`
+- Automatic updating of anchors after successful message fetches
+- Validation of anchor integrity and consistency
+- Support for gap detection and continuity verification
+- Integration with the smart caching mechanism to optimize fetch operations
+
+Anchors are created and maintained through the `temporal_anchor.py` module, which provides CLI commands for managing anchor points. The system uses these anchors to calculate optimal fetch offsets, ensuring complete coverage of message history while minimizing API calls.
+
+When a new day's messages are fetched, the system automatically updates the anchor for the previous day using the last message from that day. This creates a chain of reference points that enables reliable boundary detection and gap identification.
+
+```mermaid
+sequenceDiagram
+participant User
+participant Anchor as temporal_anchor.py
+participant Cache as telegram_cache.py
+participant Fetch as telegram_fetch.py
+User->>Anchor : set anchor for channel
+Anchor->>Anchor : store in anchors.json
+Anchor-->>User : confirmation
+User->>Fetch : fetch messages
+Fetch->>Anchor : get previous day's anchor
+Anchor-->>Fetch : return anchor data
+Fetch->>Telegram : fetch with offset from anchor
+Telegram-->>Fetch : message data
+Fetch->>Anchor : update anchor with last message
+Anchor-->>Fetch : update confirmation
+Fetch->>Cache : store messages
+```
+
+**Diagram sources**
+- [temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py#L1-L482)
+- [anchors.json](file://telegram_cache/anchors.json)
+
+**Section sources**
+- [temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py#L1-L482)
+- [anchors.json](file://telegram_cache/anchors.json)
 
 ## Conclusion
 The caching system provides a robust foundation for efficient Telegram message processing, balancing performance optimization with data accuracy. Through its intelligent TTL-based invalidation, smart fetching mechanisms, and comprehensive lifecycle management, the system effectively reduces API calls while ensuring data freshness. The modular design allows for both simple caching operations and sophisticated time-range-aware fetching, making it adaptable to various use cases. The integration with filtering and management components creates a cohesive workflow that handles common issues like stale data and boundary detection automatically, providing a reliable foundation for message analysis and processing.

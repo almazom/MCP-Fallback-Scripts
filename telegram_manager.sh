@@ -127,39 +127,178 @@ asyncio.run(send_message())
                 ;;
         esac
         ;;
+    verify-boundaries)
+        [[ -z "${2:-}" ]] || [[ -z "${3:-}" ]] && echo "Usage: $0 verify-boundaries <channel> <date>" && exit 1
+        cd "$TELEGRAM_DIR" && python3 border_message_validator.py "$2" "$3"
+        ;;
+    test-boundaries)
+        [[ -z "${2:-}" ]] && echo "Usage: $0 test-boundaries <channel> [start_date] [days]" && exit 1
+        cd "$SCRIPT_DIR/scripts/telegram_tools" && python3 test_boundaries.py "$2" "${3:-}" "${4:-7}"
+        ;;
+    verify-content)
+        [[ -z "${2:-}" ]] && echo "Usage: $0 verify-content <cache_file> [--auto-correct]" && exit 1
+        cd "$TELEGRAM_DIR"
+        if [[ "${3:-}" == "--auto-correct" ]]; then
+            python3 content_verifier.py "$2" --auto-correct
+        else
+            python3 content_verifier.py "$2"
+        fi
+        ;;
+    fetch-media)
+        [[ -z "${2:-}" ]] && echo "Usage: $0 fetch-media <channel> [limit]" && exit 1
+        cd "$TELEGRAM_DIR" && python3 telegram_fetch.py "$2" "${3:-100}" 0 "media" --fetch-media
+        ;;
+    verify-boundaries-cache)
+        [[ -z "${2:-}" ]] || [[ -z "${3:-}" ]] || [[ -z "${4:-}" ]] && echo "Usage: $0 verify-boundaries-cache <channel> <date> <cache_file>" && exit 1
+        cd "$TELEGRAM_DIR" && python3 border_message_validator.py "$2" "$3" --verify-cache "$4"
+        ;;
+    analyze-with-gemini)
+        [[ -z "${2:-}" ]] && echo "Usage: $0 analyze-with-gemini <channel> [filter] [message_id]" && exit 1
+        channel="$2"
+        filter="${3:-today}"
+        message_id="${4:-}"
+
+        if [[ -n "$message_id" ]]; then
+            # Analyze specific message by ID
+            message_content=$(cd "$TELEGRAM_DIR" && python3 telegram_json_export.py "$channel" all --full | jq -r ".messages[] | select(.id == $message_id) | .text")
+            if [[ "$message_content" == "null" || -z "$message_content" ]]; then
+                echo "❌ Message ID $message_id not found"
+                exit 1
+            fi
+            echo "🤖 Analyzing message ID $message_id with Gemini..."
+            gemini -p "Analyze this Telegram message and provide a detailed description of its content, context, and meaning: '$message_content'"
+        else
+            # Analyze all messages in filter
+            echo "🤖 Analyzing $channel messages ($filter) with Gemini..."
+            messages_json=$(cd "$TELEGRAM_DIR" && python3 telegram_json_export.py "$channel" "$filter" --full)
+            gemini -p "Analyze these Telegram messages and provide a detailed summary and insights: $messages_json"
+        fi
+        ;;
+    analyze-with-claude)
+        [[ -z "${2:-}" ]] && echo "Usage: $0 analyze-with-claude <channel> [filter] [message_id]" && exit 1
+        channel="$2"
+        filter="${3:-today}"
+        message_id="${4:-}"
+
+        if [[ -n "$message_id" ]]; then
+            # Analyze specific message by ID
+            message_content=$(cd "$TELEGRAM_DIR" && python3 telegram_json_export.py "$channel" all --full | jq -r ".messages[] | select(.id == $message_id) | .text")
+            if [[ "$message_content" == "null" || -z "$message_content" ]]; then
+                echo "❌ Message ID $message_id not found"
+                exit 1
+            fi
+            echo "🧠 Analyzing message ID $message_id with Claude..."
+            claude --print "Analyze this Telegram message and provide a detailed description of its content, context, and meaning: '$message_content'"
+        else
+            # Analyze all messages in filter
+            echo "🧠 Analyzing $channel messages ($filter) with Claude..."
+            messages_json=$(cd "$TELEGRAM_DIR" && python3 telegram_json_export.py "$channel" "$filter" --full)
+            claude --print "Analyze these Telegram messages and provide a detailed summary and insights: $messages_json"
+        fi
+        ;;
     *)
         cat << 'EOF'
-telegram_manager.sh - Simple Telegram Manager
+telegram_manager.sh - Advanced Telegram Manager with 10/10 Confidence Border Detection
 
-COMMANDS:
-  fetch <channel> [limit]       Fetch messages from Telegram
-  read <channel> [filter] [--clean|clean_cache]  Read cached messages (--clean or clean_cache to clear cache first)
-  send <target> <message>       Send message
-  json <channel> [filter]       Export raw JSON (--summary or --full)
-  cache                         Show cache info
-  clean [channel]               Clean old cache
+BASIC COMMANDS:
+  fetch <channel> [limit]                    Fetch messages from Telegram
+  read <channel> [filter] [--clean]         Read cached messages (--clean to clear cache first)
+  send <target> <message>                   Send message
+  json <channel> [filter] [--summary|--full] Export raw JSON
+  cache                                     Show cache info
+  clean [channel]                           Clean old cache
 
-  archive <channel> [date]      Archive daily cache for permanent storage
-  restore <channel> <date>      Restore daily cache from storage
-  validate <channel> [cache]    Validate message completeness
-  anchor <action> [args...]     Manage temporal anchors
+ADVANCED VERIFICATION (NEW - 10/10 CONFIDENCE):
+  verify-boundaries <channel> <date>        🎯 Ultimate boundary detection with triple verification
+  test-boundaries <channel> [start_date] [days] 🧪 Comprehensive multi-day boundary testing
+  verify-content <cache_file> [--auto-correct]  🔍 Verify cache against live data with auto-fix
+  fetch-media <channel> [limit]             📎 Fetch messages with automatic media download
+  verify-boundaries-cache <channel> <date> <cache> Compare cached vs live boundaries
 
-FILTERS: today, yesterday, last:N, all
+AI ANALYSIS:
+  analyze-with-gemini <channel> [filter] [message_id] 🤖 Detailed message analysis using Gemini
+  analyze-with-claude <channel> [filter] [message_id] 🧠 Detailed message analysis using Claude
 
-Examples:
+PERSISTENCE & ANCHORING:
+  archive <channel> [date]                  Archive daily cache for permanent storage
+  restore <channel> <date>                  Restore daily cache from storage
+  validate <channel> [cache]                Validate message completeness
+  anchor <action> [args...]                 Manage temporal anchors
+
+FILTERS: today, yesterday, last:N, all, YYYY-MM-DD
+
+BASIC EXAMPLES:
   ./telegram_manager.sh fetch aiclubsweggs 100
   ./telegram_manager.sh read aiclubsweggs today
   ./telegram_manager.sh read aiclubsweggs today --clean
-  ./telegram_manager.sh read aiclubsweggs clean_cache
-  ./telegram_manager.sh read aiclubsweggs --clean
-  ./telegram_manager.sh json aiclubsweggs today --summary
+  ./telegram_manager.sh json aiclubsweggs yesterday --summary
   ./telegram_manager.sh send @almazom "Hello"
 
-  ./telegram_manager.sh archive @aiclubsweggs
-  ./telegram_manager.sh restore @aiclubsweggs 2025-09-15
+VERIFICATION EXAMPLES (10/10 CONFIDENCE SYSTEM):
+  # Ultimate boundary detection with triple verification + media download
+  ./telegram_manager.sh verify-boundaries @aiclubsweggs 2025-09-14
+
+  # Comprehensive testing across multiple days with confidence scoring
+  ./telegram_manager.sh test-boundaries @aiclubsweggs 2025-09-14 7
+
+  # Verify cache accuracy against live Telegram data
+  ./telegram_manager.sh verify-content telegram_cache/aiclubsweggs_20250915_224022.json
+
+  # Auto-correct cache inconsistencies
+  ./telegram_manager.sh verify-content cache.json --auto-correct
+
+  # Fetch messages with automatic media download and hash verification
+  ./telegram_manager.sh fetch-media @aiclubsweggs 50
+
+  # Compare cached boundary vs live detection
+  ./telegram_manager.sh verify-boundaries-cache @aiclubsweggs 2025-09-14 cache.json
+
+AI ANALYSIS EXAMPLES:
+  # Analyze specific message with detailed AI description
+  ./telegram_manager.sh analyze-with-gemini @aiclubsweggs today 72856
+  ./telegram_manager.sh analyze-with-claude @aiclubsweggs today 72856
+
+  # Analyze all messages from a time period
+  ./telegram_manager.sh analyze-with-gemini @aiclubsweggs yesterday
+  ./telegram_manager.sh analyze-with-claude @aiclubsweggs 2025-09-14
+
+PERSISTENCE EXAMPLES:
+  ./telegram_manager.sh archive @aiclubsweggs 2025-09-14
+  ./telegram_manager.sh restore @aiclubsweggs 2025-09-14
   ./telegram_manager.sh validate @aiclubsweggs
+
+ANCHOR MANAGEMENT:
   ./telegram_manager.sh anchor list @aiclubsweggs
-  ./telegram_manager.sh anchor set @aiclubsweggs 72856 00:58:11
+  ./telegram_manager.sh anchor set @aiclubsweggs 72856 00:58:11 2025-09-15
+  ./telegram_manager.sh anchor get @aiclubsweggs 2025-09-15
+
+🎯 NEW FEATURES:
+  ✅ Triple verification using 3 different Telegram API methods
+  ✅ Automatic media download with content hash verification
+  ✅ 100% confidence scoring with detailed reporting
+  ✅ Cross-validation against live Telegram data
+  ✅ Auto-correction of cache inconsistencies
+  ✅ Comprehensive multi-day boundary testing
+  ✅ Moscow timezone aware date handling
+  ✅ Phase-based boundary detection (Broad→Verify→Triple-check)
+
+🏆 CONFIDENCE LEVELS:
+  100%  = Perfect verification (10/10)
+  ≥95%  = Excellent (9/10)
+  ≥90%  = Good (8/10)
+  ≥80%  = Fair (7/10)
+  <80%  = Needs investigation
+
+📊 VERIFICATION REPORTS:
+  All verification operations generate detailed JSON reports in:
+  ./telegram_verification/
+
+  Reports include:
+  - Confidence scores and verification methods used
+  - Media download status and content hashes
+  - Boundary detection phases and candidate analysis
+  - Cross-validation results against live data
+  - Performance metrics and timing information
 EOF
         ;;
 esac

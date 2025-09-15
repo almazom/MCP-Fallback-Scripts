@@ -2,11 +2,21 @@
 
 <cite>
 **Referenced Files in This Document**  
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
-- [telegram_manager.sh](file://telegram_manager.sh)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in recent commit*
+- [telegram_fetch_large.py](file://scripts/telegram_tools/core/telegram_fetch_large.py) - *Updated in recent commit*
+- [anchors.json](file://telegram_cache/anchors.json) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh) - *Modified in recent commit*
 - [test_05_date_today.sh](file://tests/test_05_date_today.sh)
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
 </cite>
+
+## Update Summary
+**Changes Made**  
+- Updated TTL rules and filter type logic to reflect current implementation in `telegram_cache.py`
+- Corrected and enhanced the cache validation mechanism description based on actual code behavior
+- Added clarification on command-line interface usage for cache operations
+- Verified integration points with `telegram_manager.sh` for accuracy
+- Removed outdated references and ensured all examples match current code
+- Incorporated changes from recent commit affecting anchor data and fetch validation logic
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -32,7 +42,7 @@ The core of the caching system is the `is_cache_valid` function, which determine
 
 The validation process follows these steps:
 1. Locate the most recent cache file for the specified channel
-2. Calculate the age of the cache file in minutes
+2. Calculate the age of the cache file in minutes using `get_cache_age_minutes`
 3. Determine the appropriate TTL threshold based on the filter type
 4. Compare cache age against TTL to determine validity
 
@@ -50,8 +60,8 @@ DetermineTTL --> Compare["Compare Age vs TTL"]
 Compare --> Valid{"Age < TTL?"}
 Valid --> |Yes| CacheValid["Cache Valid: Use Cached Data"]
 Valid --> |No| CacheStale["Cache Stale: Fetch Fresh Data"]
-CacheValid --> End([Validation Complete])
-CacheStale --> End
+CacheStale --> End([Validation Complete])
+CacheValid --> End
 Invalid --> End
 ```
 
@@ -195,7 +205,7 @@ FetchNew --> CLI
 Several common issues can affect cache validation, along with their troubleshooting steps:
 
 ### 1. Incorrect Timestamp Parsing
-**Symptoms**: Cache files are consistently invalidated even when recently created
+**Symptoms**: Cache files are consistently invalidated even when recently created  
 **Causes**: 
 - Filename format changes or corruption
 - System clock synchronization issues
@@ -207,7 +217,7 @@ Several common issues can affect cache validation, along with their troubleshoot
 - Test the `get_cache_age_minutes` function with sample filenames
 
 ### 2. Unexpected Cache Invalidation
-**Symptoms**: Frequent fresh data fetches despite recent cache updates
+**Symptoms**: Frequent fresh data fetches despite recent cache updates  
 **Causes**:
 - TTL values too short for the use case
 - Clock drift between systems
@@ -219,7 +229,7 @@ Several common issues can affect cache validation, along with their troubleshoot
 - Verify the cache file creation timestamp matches system time
 
 ### 3. Stale Data Usage
-**Symptoms**: Outdated information displayed despite changes in the source
+**Symptoms**: Outdated information displayed despite changes in the source  
 **Causes**:
 - TTL values too long for dynamic content
 - Cache validation bypassed in the workflow

@@ -2,12 +2,20 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in commit fe6b66826c60c2df4e9c5c05ff39cd70df425029*
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
 - [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py)
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated **Facade Pattern and Orchestration Layer** section to reflect performance refinements in `telegram_manager.sh`
+- Enhanced **Core Module Responsibilities** with additional context on border detection and auto-fetching behavior
+- Updated sequence diagrams to reflect current control flow with improved cache validation and fallback mechanisms
+- Added details about new verification commands and AI analysis features visible in the updated help text
+- Maintained consistency in architectural principles with emphasis on error resilience and maintainability
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -35,15 +43,15 @@ The orchestration layer manages several key responsibilities:
 This facade approach enables users to perform complex operations with simple commands while maintaining separation between interface logic and implementation details.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L110)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L305) - *Updated in commit fe6b66826c60c2df4e9c5c05ff39cd70df425029*
 
 ## Core Module Responsibilities
 
 ### telegram_fetch.py - API Message Retrieval
-The `telegram_fetch.py` module is responsible for retrieving messages from Telegram channels via the Telethon API. It establishes authenticated connections using credentials from the `.env` file, fetches message history with full metadata, converts timestamps to Moscow time (UTC+3), and saves the structured data to JSON cache files. The module handles media detection and formatting, ensuring rich message content is preserved in the cache.
+The `telegram_fetch.py` module is responsible for retrieving messages from Telegram channels via the Telethon API. It establishes authenticated connections using credentials from the `.env` file, fetches message history with full metadata, converts timestamps to Moscow time (UTC+3), and saves the structured data to JSON cache files. The module handles media detection and formatting, ensuring rich message content is preserved in the cache. It also supports temporal anchoring to optimize fetch offsets and can automatically download media files when requested.
 
 **Section sources**
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L147)
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L234)
 
 ### telegram_cache.py - TTL-Based Cache Management
 The `telegram_cache.py` module implements intelligent cache management with time-to-live (TTL) rules tailored to different filtering contexts. It defines different expiration policies for various data access patterns: 5 minutes for today's messages, 60 minutes for recent messages (last 7 days), and 1440 minutes (24 hours) for archival data. The module provides functionality to check cache validity, clean outdated files, and display cache statistics, ensuring optimal balance between freshness and performance.
@@ -52,7 +60,7 @@ The `telegram_cache.py` module implements intelligent cache management with time
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L179)
 
 ### telegram_filter.py - Message Filtering with Border Detection
-The `telegram_filter.py` module performs efficient filtering of cached messages based on date, pattern, or range criteria. It implements sophisticated border detection logic to ensure accurate message boundaries when filtering by date, automatically fetching additional messages when insufficient context exists for reliable border validation. The module includes fallback mechanisms that trigger additional data retrieval to maintain data integrity, particularly important for timezone-aware processing and accurate first-message detection.
+The `telegram_filter.py` module performs efficient filtering of cached messages based on date, pattern, or range criteria. It implements sophisticated border detection logic to ensure accurate message boundaries when filtering by date, automatically fetching additional messages when insufficient context exists for reliable border validation. The module includes fallback mechanisms that trigger additional data retrieval to maintain data integrity, particularly important for timezone-aware processing and accurate first-message detection. When fewer than 3 previous messages are available for validation, it auto-fetches up to 500 messages to ensure proper context.
 
 **Section sources**
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L239)
@@ -112,9 +120,9 @@ end
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L110)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L305)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L179)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L147)
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L234)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L239)
 
 ```mermaid
@@ -133,7 +141,7 @@ Manager-->>User : display JSON
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L110)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L305)
 - [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L125)
 
 ## Architectural Principles and Maintainability
@@ -156,8 +164,8 @@ The facade pattern and modular design make it straightforward to add new command
 The architecture includes multiple safeguards, including automatic cache validation, fallback border detection with auto-fetching, and comprehensive error handling at both shell and Python levels, ensuring robust operation in various conditions.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L110)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L147)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L305)
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L234)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L179)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L239)
 - [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L125)

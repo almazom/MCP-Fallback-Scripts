@@ -2,11 +2,21 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py)
+- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py) - *Updated in recent commit*
 - [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py)
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Updated in recent commit*
 - [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated Introduction to reflect refactored architecture
+- Revised Caching and Boundary Detection Overview to align with new fallback mechanism
+- Modified Integration Workflow to show updated interaction pattern
+- Updated Boundary Validation Process section to reflect current implementation
+- Enhanced Intelligent Fallback and Auto-Fetching section with accurate auto-fetch details
+- Refreshed Failure Modes and Mitigation with current mitigation strategies
+- Updated all section sources to reflect file changes
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -22,7 +32,11 @@
 ## Introduction
 This document details the integration between the caching system and boundary detection mechanisms in the Telegram message processing pipeline. It explains how the system ensures accurate identification of first and last messages for date-based queries such as "read today" or "json yesterday", despite challenges posed by incomplete caches, stale data, and message ordering inconsistencies in Telegram API responses.
 
-The solution combines a simple cache freshness check with intelligent boundary validation and automatic data replenishment to provide reliable message border detection. This integration is critical for applications requiring precise temporal message segmentation, particularly when dealing with timezone-aware operations in the Moscow timezone (UTC+3).
+The solution combines a simple cache freshness check with intelligent boundary validation and automatic data replenishment to provide reliable message border detection. This integration is critical for applications requiring precise temporal message segmentation, particularly when dealing with timezone-aware operations in the Moscow timezone (UTC+3). Recent refactoring has restructured border detection as a fallback mechanism within filtering, with enhanced auto-fetch capabilities.
+
+**Section sources**
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py#L1-L47) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 
 ## Caching and Boundary Detection Overview
 
@@ -33,12 +47,12 @@ The system employs a multi-layered approach to ensure accurate message boundary 
 3. **Smart Caching**: Utilizes `telegram_smart_cache.py` for time-range-aware data fetching
 4. **Auto-Recovery**: Triggers additional API fetches when boundary conditions cannot be validated
 
-This architecture addresses the fundamental challenge of Telegram's API response inconsistencies, where message ordering may not strictly follow chronological sequence, potentially leading to incorrect first/last message identification.
+This architecture addresses the fundamental challenge of Telegram's API response inconsistencies, where message ordering may not strictly follow chronological sequence, potentially leading to incorrect first/last message identification. The recent refactoring has integrated border detection as a fallback mechanism within the filtering process, with auto-fetch capability to ensure data completeness.
 
 **Section sources**
-- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py#L1-L47)
+- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py#L1-L47) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 - [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py#L1-L243)
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 
 ## Core Components
 
@@ -57,7 +71,7 @@ F --> |No| H["Print 'fresh'"]
 ```
 
 **Diagram sources**
-- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py#L15-L47)
+- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py#L15-L47) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 
 ### Telegram Smart Cache
 The `telegram_smart_cache.py` module implements an intelligent caching strategy that ensures complete time range coverage. It scans messages until it finds content preceding the target time range, guaranteeing that all relevant messages within the specified period are captured.
@@ -107,11 +121,11 @@ M --> O
 ```
 
 **Diagram sources**
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L72-L96)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L72-L96) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 - [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
 
 **Section sources**
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 - [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
 
 ## Time Range and Date Filtering
@@ -144,7 +158,7 @@ The boundary validation process in `validate_border_detection()` ensures that th
 4. Verifies that none of these preceding messages belong to the same date
 5. Returns validation status
 
-The validation is triggered automatically for single-date filters (today, yesterday, specific date) when message filtering occurs.
+The validation is triggered automatically for single-date filters (today, yesterday, specific date) when message filtering occurs. This implementation has been updated to function as a fallback mechanism within the filtering process.
 
 ```mermaid
 flowchart TD
@@ -159,10 +173,10 @@ G --> |No| I["Return True (valid border)"]
 ```
 
 **Diagram sources**
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L41-L96)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L41-L96) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 
 **Section sources**
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L41-L128)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L41-L128) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 
 ## Intelligent Fallback and Auto-Fetching
 
@@ -175,7 +189,7 @@ The auto-fetching mechanism:
 - Reloads the updated cache
 - Retries the boundary validation
 
-This creates a self-correcting system that automatically resolves incomplete data scenarios without user intervention.
+This creates a self-correcting system that automatically resolves incomplete data scenarios without user intervention. The recent refactoring has enhanced this mechanism to be an integral part of the filtering process.
 
 ```mermaid
 sequenceDiagram
@@ -195,7 +209,7 @@ Filter->>Filter : Retry validation
 ```
 
 **Diagram sources**
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L72-L96)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L72-L96) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 - [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
 
 ## Failure Modes and Mitigation
@@ -230,9 +244,9 @@ Telegram API responses may not maintain strict chronological order, potentially 
 - **Partial Caches**: Incomplete caches trigger auto-fetching
 
 **Section sources**
-- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py#L15-L47)
+- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py#L15-L47) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 - [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py#L55-L227)
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L41-L128)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L41-L128) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 
 ## Conclusion
 The integration between the caching system and boundary detection mechanisms provides a robust solution for accurate first/last message identification in date-based queries. By combining simple cache freshness checks with intelligent boundary validation and automatic data replenishment, the system overcomes the limitations of Telegram's API response inconsistencies.
@@ -240,7 +254,7 @@ The integration between the caching system and boundary detection mechanisms pro
 The key innovation lies in the coordinated interaction between components:
 - `simple_boundary_check.py` provides rapid cache health assessment
 - `telegram_smart_cache.py` ensures comprehensive time range coverage
-- `telegram_filter.py` implements sophisticated boundary validation
+- `telegram_filter.py` implements sophisticated boundary validation as a fallback mechanism
 - Automatic fallback mechanisms maintain data integrity
 
-This architecture enables reliable execution of operations like "read today" and "json yesterday" by ensuring that message borders are accurately detected even when dealing with incomplete or stale cache data. The system's self-healing capabilities through auto-fetching make it resilient to various failure modes while maintaining high accuracy in message boundary detection.
+This architecture enables reliable execution of operations like "read today" and "json yesterday" by ensuring that message borders are accurately detected even when dealing with incomplete or stale cache data. The system's self-healing capabilities through auto-fetching make it resilient to various failure modes while maintaining high accuracy in message boundary detection. The recent refactoring to a JSON-based architecture with border detection as a fallback mechanism has further enhanced the system's reliability and maintainability.

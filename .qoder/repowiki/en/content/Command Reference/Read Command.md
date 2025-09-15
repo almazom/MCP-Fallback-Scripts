@@ -2,12 +2,19 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh#L30-L72)
-- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L32-L57)
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L122-L173)
+- [telegram_manager.sh](file://telegram_manager.sh#L30-L72) - *Updated in commit 898f67f*
+- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L32-L57) - *Updated in commit 898f67f*
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L122-L173) - *Updated in commit 898f67f*
 - [tests/BUG_REPORT_message_ordering.md](file://tests/BUG_REPORT_message_ordering.md#L38-L85)
 - [tests/PROPOSED_FIX_message_ordering.md](file://tests/PROPOSED_FIX_message_ordering.md#L109-L155)
 </cite>
+
+## Update Summary
+- **Cache Management Behavior**: Updated to reflect new JSON-based architecture and auto-fetch behavior
+- **Border Detection System**: Enhanced description of fallback border detection with auto-fetch mechanism
+- **Message Ordering Behavior**: Clarified current inconsistency and upcoming fix with `--order` parameter
+- **Section sources**: Added update annotations for files modified in recent commit
+- **Diagram sources**: Updated to reflect current implementation state
 
 ## Table of Contents
 1. [Command Syntax and Parameters](#command-syntax-and-parameters)
@@ -35,7 +42,7 @@ The read command provides access to Telegram messages through a flexible syntax 
 The command is implemented in the main script and routes operations to specialized Python modules for cache validation and message filtering.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L30-L32)
+- [telegram_manager.sh](file://telegram_manager.sh#L30-L32) - *Updated in commit 898f67f*
 
 ## Cache Management Behavior
 
@@ -67,12 +74,12 @@ FilterMessages --> Display["Display results"]
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L30-L72)
-- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L32-L57)
+- [telegram_manager.sh](file://telegram_manager.sh#L30-L72) - *Updated in commit 898f67f*
+- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L32-L57) - *Updated in commit 898f67f*
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L30-L72)
-- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L32-L57)
+- [telegram_manager.sh](file://telegram_manager.sh#L30-L72) - *Updated in commit 898f67f*
+- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L32-L57) - *Updated in commit 898f67f*
 
 ## Message Filtering Process
 
@@ -110,10 +117,10 @@ Shell->>User : Display results
 ```
 
 **Diagram sources**
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L122-L173)
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L122-L173) - *Updated in commit 898f67f*
 
 **Section sources**
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L122-L173)
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L122-L173) - *Updated in commit 898f67f*
 
 ## Border Detection System
 
@@ -121,10 +128,10 @@ The read command integrates with a border detection system to ensure accurate da
 
 When filtering for a specific date, the system triggers border detection that examines messages immediately preceding the first filtered message. It checks 3-7 messages before the border to verify they belong to a different date. If messages with the same date are found before the supposed border, the system flags a potential detection issue.
 
-The border detection includes a fallback mechanism that automatically fetches additional messages when insufficient data is available for proper validation. This ensures robust date-range filtering even when the initial cache doesn't contain enough context around date boundaries.
+The border detection includes a fallback mechanism that automatically fetches additional messages when insufficient data is available for proper validation. This ensures robust date-range filtering even when the initial cache doesn't contain enough context around date boundaries. The auto-fetch mechanism uses timezone-aware Moscow time validation and retrieves a larger message set (minimum 500) to ensure complete context for border validation.
 
 **Section sources**
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L21-L159)
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L21-L159) - *Updated in commit 898f67f*
 
 ## Message Ordering Behavior
 
@@ -194,7 +201,7 @@ style Default fill:#bbf,stroke:#333
 ```
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L30-L72)
+- [telegram_manager.sh](file://telegram_manager.sh#L30-L72) - *Updated in commit 898f67f*
 
 ## Common Issues and Troubleshooting
 
@@ -225,7 +232,7 @@ style Default fill:#bbf,stroke:#333
 - **Note**: This is a known issue with planned resolution
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L30-L72)
-- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L32-L57)
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L21-L159)
+- [telegram_manager.sh](file://telegram_manager.sh#L30-L72) - *Updated in commit 898f67f*
+- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L32-L57) - *Updated in commit 898f67f*
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L21-L159) - *Updated in commit 898f67f*
 - [tests/BUG_REPORT_message_ordering.md](file://tests/BUG_REPORT_message_ordering.md#L38-L85)

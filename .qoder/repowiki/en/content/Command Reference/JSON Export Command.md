@@ -2,14 +2,23 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py) - *Updated in recent commit*
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
-- [telegram_manager.sh](file://telegram_manager.sh)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Modified to support JSON export*
 - [test_05_date_today.sh](file://tests/test_05_date_today.sh)
 - [test_10_error_handling.sh](file://tests/test_10_error_handling.sh)
 - [test_first_message_border_detection.sh](file://tests/test_first_message_border_detection.sh)
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated command syntax and usage to reflect current implementation
+- Enhanced core functionality section with accurate processing flow
+- Clarified output mode differences with updated JSON structures
+- Verified filtering system behavior against current code
+- Updated error handling details based on actual implementation
+- Refreshed examples to match current command interface
 
 ## Table of Contents
 1. [Command Syntax and Usage](#command-syntax-and-usage)
@@ -38,8 +47,8 @@ json <channel> [filter] [--summary|--full]
 The command is accessible through the main `telegram_manager.sh` script, which routes the request to the dedicated `telegram_json_export.py` module for processing.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L100-L103)
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L70-L85)
+- [telegram_manager.sh](file://telegram_manager.sh#L133-L164)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L76-L121)
 
 ## Core Functionality
 
@@ -68,8 +77,8 @@ Manager-->>User : Display JSON results
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L100-L103)
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L86-L119)
+- [telegram_manager.sh](file://telegram_manager.sh#L133-L164)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L76-L121)
 
 **Section sources**
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L124)
@@ -112,10 +121,10 @@ SummaryOutput --> Message : last_message
 ```
 
 **Diagram sources**
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L45-L65)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L63-L98)
 
 **Section sources**
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L45-L65)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L63-L98)
 
 ## Full Mode
 
@@ -277,13 +286,11 @@ ShowUsage --> Exit1
 ```
 
 **Diagram sources**
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L70-L85)
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L119-L123)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L76-L121)
 - [test_10_error_handling.sh](file://tests/test_10_error_handling.sh#L1-L244)
 
 **Section sources**
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L70-L85)
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L119-L123)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L76-L121)
 - [test_10_error_handling.sh](file://tests/test_10_error_handling.sh#L1-L244)
 
 ## Use Cases
@@ -343,5 +350,5 @@ Export messages from a specific date in full detail:
 These examples demonstrate the flexibility of the JSON export command in accommodating various data extraction needs while maintaining a consistent interface.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L100-L103)
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L75-L85)
+- [telegram_manager.sh](file://telegram_manager.sh#L133-L164)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L76-L121)

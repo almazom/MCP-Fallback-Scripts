@@ -13,6 +13,14 @@
 - [test_date_calculations.sh](file://tests/test_date_calculations.sh)
 </cite>
 
+## Update Summary
+**Changes Made**   
+- Updated documentation to reflect ongoing architectural changes in the codebase
+- Enhanced explanation of message ordering issue and resolution strategy
+- Clarified test script purposes in context of JSON-based refactoring
+- Maintained accurate references to existing test infrastructure
+- Preserved all valid documentation while acknowledging future updates needed for new architecture
+
 ## Table of Contents
 1. [Testing Framework](#testing-framework)
 2. [Test Organization and Structure](#test-organization-and-structure)

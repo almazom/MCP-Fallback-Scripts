@@ -2,10 +2,20 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
-- [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated all sections to reflect the new JSON-based architecture and .env configuration system
+- Enhanced security considerations with updated file permission guidance
+- Clarified configuration loading mechanism with accurate code references
+- Added new diagram sources based on actual implementation
+- Updated section sources to reflect recent changes in referenced files
 
 ## Table of Contents
 1. [Prerequisites](#prerequisites)

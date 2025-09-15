@@ -2,9 +2,9 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
 - [tests/comprehensive_message_analysis.sh](file://tests/comprehensive_message_analysis.sh)
@@ -12,6 +12,14 @@
 - [tests/boundary_aware_first_message_detector.sh](file://tests/boundary_aware_first_message_detector.sh)
 - [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh)
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated Core Commands Overview section to reflect JSON-based architecture changes
+- Revised Message Monitoring Workflows to account for direct Python script invocation
+- Enhanced diagram sources with updated file references
+- Added new information about modular Python scripts in automation workflows
+- Removed outdated command chaining assumptions based on refactored architecture
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -29,7 +37,7 @@
 The FALLBACK_SCRIPTS toolkit provides a robust framework for scripting and automation of Telegram message monitoring and alerting workflows. This document details how to create shell scripts that chain multiple commands (fetch, filter, json, send) to build automated systems for daily digest generation, anomaly detection, and scheduled message relaying. The toolkit's modular design enables flexible pipeline construction with proper error handling, caching strategies, and integration capabilities.
 
 ## Core Commands Overview
-The telegram_manager.sh script serves as the primary interface for interacting with Telegram channels through various subcommands that can be chained together in automation workflows.
+The telegram_manager.sh script serves as the primary interface for interacting with Telegram channels through various subcommands that can be chained together in automation workflows. Recent refactoring has introduced a JSON-based architecture that allows direct invocation of modular Python scripts.
 
 ```mermaid
 flowchart TD
@@ -46,13 +54,15 @@ H --> P["Output: JSON data for processing"]
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L0-L146) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238) - *Updated in recent commit*
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
 
 ## Message Monitoring Workflows
-The toolkit enables creation of sophisticated message monitoring workflows by chaining commands together. These workflows can be designed for various use cases including daily digest generation and anomaly detection.
+The toolkit enables creation of sophisticated message monitoring workflows by chaining commands together. These workflows can be designed for various use cases including daily digest generation and anomaly detection. The recent JSON-based architecture refactor allows direct invocation of Python modules, enhancing script flexibility and performance.
 
 ### Daily Digest Generation
 Daily digest scripts can be created by combining the fetch, filter, and send commands to automatically compile and deliver summaries of channel activity.
@@ -75,9 +85,9 @@ Script-->>Cron : Completion
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L0-L146)
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238)
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L0-L146) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238) - *Updated in recent commit*
 
 ### Anomaly Detection via Pattern Filtering
 Anomaly detection workflows use pattern matching to identify specific message content that requires attention or further action.
@@ -95,12 +105,12 @@ LogEvent --> End
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109)
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238)
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238) - *Updated in recent commit*
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109)
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238)
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238) - *Updated in recent commit*
 
 ## Automated Alerting Systems
 The toolkit supports creation of automated alerting systems that can detect specific conditions and send notifications through various channels.
@@ -124,7 +134,7 @@ RelayScript-->>Cron : Job completed
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
 
 ## JSON Processing and Downstream Integration
 The json command enables integration with downstream processing systems by providing raw JSON output that can be parsed and analyzed.
@@ -166,7 +176,7 @@ Analyze->>Analyze : Create visualizations
 ```
 
 **Diagram sources**
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L0-L146)
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L0-L146) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L0-L124)
 
 **Section sources**
@@ -195,7 +205,7 @@ H --> I["Run: /path/to/script.sh"]
 ```
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
 
 ## Error Handling in Unattended Scripts
 Proper error handling is critical for unattended scripts to ensure reliability and provide meaningful diagnostics when issues occur.
@@ -270,7 +280,7 @@ F --> H["Continue workflow"]
 
 **Section sources**
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L0-L178)
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
 
 ## Common Pitfalls and Solutions
 Understanding common pitfalls helps avoid issues when developing automation scripts with the toolkit.

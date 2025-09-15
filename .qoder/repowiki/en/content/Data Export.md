@@ -2,11 +2,20 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py)
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
-- [aiclubsweggs_20250915_211527.json](file://telegram_cache/aiclubsweggs_20250915_211527.json)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py) - *Updated in recent commit*
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Modified in recent commit*
+- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Modified in recent commit*
+- [aiclubsweggs_20250915_224022.json](file://telegram_cache/aiclubsweggs_20250915_224022.json) - *Updated cache example*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated export modes to reflect accurate default behavior and command-line interface
+- Corrected implementation details based on actual code logic in `telegram_json_export.py`
+- Revised output structure examples to match current JSON schema
+- Updated diagram sources to reflect accurate file references
+- Added clarification on message sorting and chronological ordering
+- Removed outdated performance considerations that no longer apply due to simplified filtering logic
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -28,7 +37,7 @@ The data export functionality is implemented in `telegram_json_export.py`, which
 **Section sources**
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L124)
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L178)
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
+- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L193)
 
 ## Export Modes
 
@@ -41,7 +50,7 @@ The summary mode (`--summary`) provides a condensed view of the filtered message
 - Last message (chronologically latest)
 - Time range of the message set
 
-This mode is ideal for quick overviews, trend analysis, and determining message volume patterns without transferring large datasets.
+This mode is ideal for quick overviews, trend analysis, and determining message volume patterns without transferring large datasets. **Note**: Summary mode is the default output mode when no mode flag is specified.
 
 ### Full Mode
 The full mode (`--full`) exports the complete set of filtered messages with all available metadata. The output includes:
@@ -72,7 +81,7 @@ Messages are filtered based on the specified time criteria:
 The filtering is performed by comparing the `date_msk` field of each message against the filter criteria.
 
 ### Data Transformation
-For summary mode, the system sorts messages chronologically and extracts the first and last messages. For full mode, all filtered messages are included in their original structure with metadata about the export context.
+For summary mode, the system sorts messages chronologically (oldest first) and extracts the first and last messages. For full mode, all filtered messages are included in their original structure with metadata about the export context.
 
 ```mermaid
 flowchart TD
@@ -168,7 +177,7 @@ Error --> End
 ```
 
 **Section sources**
-- [aiclubsweggs_20250915_211527.json](file://telegram_cache/aiclubsweggs_20250915_211527.json#L1-L1012)
+- [aiclubsweggs_20250915_224022.json](file://telegram_cache/aiclubsweggs_20250915_224022.json#L1-L1012)
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L77-L124)
 
 ## Integration with Data Analysis Workflow
@@ -190,7 +199,7 @@ F --> I[Trend Analysis]
 
 **Diagram sources**
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L124)
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
+- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L193)
 
 The exported data integrates with the broader workflow by providing structured input for:
 - Sentiment analysis

@@ -2,12 +2,24 @@
 
 <cite>
 **Referenced Files in This Document**  
-- [telegram_manager.sh](file://telegram_manager.sh)
-- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
-- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
-- [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py) - *Updated in recent commit*
+- [scripts/telegram_tools/core/temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py) - *Added in recent commit*
+- [scripts/telegram_tools/core/daily_persistence.py](file://scripts/telegram_tools/core/daily_persistence.py) - *Added in recent commit*
+- [scripts/telegram_tools/core/gap_validator.py](file://scripts/telegram_tools/core/gap_validator.py) - *Added in recent commit*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Added documentation for new commands: `archive`, `restore`, `validate`, and `anchor`
+- Updated command overview to reflect new functionality
+- Enhanced filter types section with date-based filtering
+- Updated integration section to include new Python modules
+- Added new architecture diagram reflecting JSON-based architecture
+- Updated section sources to reflect file changes and additions
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -25,11 +37,11 @@ The `telegram_manager.sh` script provides a command-line interface for managing 
 The command-line interface follows a consistent pattern where each command maps to a specific Python module that performs the core functionality. The bash script acts as a controller, handling parameter validation, environment setup, and coordinating the execution flow between different components. This modular architecture allows for easy maintenance and extension of functionality.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L165)
 
 ## Command Overview
 
-The `telegram_manager.sh` script provides six primary commands that enable comprehensive management of Telegram messages:
+The `telegram_manager.sh` script provides ten primary commands that enable comprehensive management of Telegram messages:
 
 - **fetch**: Retrieves messages from a Telegram channel and stores them in a local cache
 - **read**: Displays cached messages with optional filtering and cache refresh capabilities
@@ -37,6 +49,10 @@ The `telegram_manager.sh` script provides six primary commands that enable compr
 - **json**: Exports message data in JSON format for programmatic use
 - **cache**: Displays information about the current cache state
 - **clean**: Removes old cache files to free up space
+- **archive**: Archives daily cache for permanent storage
+- **restore**: Restores daily cache from storage
+- **validate**: Validates message completeness and detects gaps
+- **anchor**: Manages temporal anchors for precise message retrieval
 
 Each command is designed to perform a single, well-defined function, following the Unix philosophy of doing one thing well. The commands can be chained together in scripts to create more complex workflows, such as fetching fresh data and then processing it with custom analysis tools.
 
@@ -48,24 +64,35 @@ A --> D[send]
 A --> E[json]
 A --> F[cache]
 A --> G[clean]
-B --> H[telegram_fetch.py]
-C --> I[telegram_filter.py]
-C --> J[telegram_cache.py]
-D --> K[Inline Python Script]
-E --> L[telegram_json_export.py]
-F --> J
-G --> J
+A --> H[archive]
+A --> I[restore]
+A --> J[validate]
+A --> K[anchor]
+B --> L[telegram_fetch.py]
+C --> M[telegram_filter.py]
+C --> N[telegram_cache.py]
+D --> O[Inline Python Script]
+E --> P[telegram_json_export.py]
+F --> N
+G --> N
+H --> Q[daily_persistence.py]
+I --> Q
+J --> R[gap_validator.py]
+K --> S[temporal_anchor.py]
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L6-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L6-L165)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L178)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L193)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
 - [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L124)
+- [scripts/telegram_tools/core/daily_persistence.py](file://scripts/telegram_tools/core/daily_persistence.py#L1-L150)
+- [scripts/telegram_tools/core/gap_validator.py](file://scripts/telegram_tools/core/gap_validator.py#L1-L120)
+- [scripts/telegram_tools/core/temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py#L1-L180)
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L6-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L6-L165)
 
 ## Command Details
 
@@ -78,7 +105,7 @@ The `fetch` command retrieves messages from a specified Telegram channel and sto
 - **Required parameters**: `<channel>` - The Telegram channel identifier (with or without @ prefix)
 - **Optional parameters**: `[limit]` - Maximum number of messages to fetch (default: 200)
 
-**Expected behavior**: The command changes to the core tools directory and executes `telegram_fetch.py` with the provided parameters. It connects to Telegram using credentials from the `.env` file, retrieves the specified number of messages from the channel, and saves them with full metadata to a timestamped JSON file in the cache directory.
+**Expected behavior**: The command changes to the core tools directory and executes `telegram_fetch.py` with the provided parameters. It connects to Telegram using credentials from the `.env` file, retrieves the specified number of messages from the channel, and saves them with full metadata to a timestamped JSON file in the cache directory. The command now uses temporal anchoring to optimize message retrieval.
 
 **Practical example**: To fetch 100 messages from the "aiclubsweggs" channel:
 ```bash
@@ -87,7 +114,7 @@ The `fetch` command retrieves messages from a specified Telegram channel and sto
 
 **Section sources**
 - [telegram_manager.sh](file://telegram_manager.sh#L10-L13)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L193)
 
 ### read Command
 
@@ -188,6 +215,90 @@ The `clean` command removes old cache files to free up disk space, either for a 
 - [telegram_manager.sh](file://telegram_manager.sh#L81-L83)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L178)
 
+### archive Command
+
+The `archive` command archives daily cache for permanent storage, enabling long-term message preservation.
+
+**Syntax**: `./telegram_manager.sh archive <channel> [date]`
+
+- **Required parameters**: `<channel>` - The Telegram channel identifier
+- **Optional parameters**: `[date]` - Specific date to archive (default: today)
+
+**Expected behavior**: The command executes `daily_persistence.py archive` with the provided parameters. It moves the cache file for the specified channel and date to a permanent storage location, preserving it from regular cache cleanup operations.
+
+**Practical example**: To archive today's messages from "aiclubsweggs":
+```bash
+./telegram_manager.sh archive aiclubsweggs
+```
+
+**Section sources**
+- [telegram_manager.sh](file://telegram_manager.sh#L96-L98)
+- [scripts/telegram_tools/core/daily_persistence.py](file://scripts/telegram_tools/core/daily_persistence.py#L1-L150)
+
+### restore Command
+
+The `restore` command restores daily cache from permanent storage, allowing access to archived messages.
+
+**Syntax**: `./telegram_manager.sh restore <channel> <date>`
+
+- **Required parameters**: `<channel>` - The Telegram channel identifier, `<date>` - Date of the archive to restore (YYYY-MM-DD format)
+
+**Expected behavior**: The command executes `daily_persistence.py restore` with the provided parameters. It retrieves the archived cache file for the specified channel and date from permanent storage and places it back in the active cache directory.
+
+**Practical example**: To restore messages from "aiclubsweggs" for September 15, 2025:
+```bash
+./telegram_manager.sh restore aiclubsweggs 2025-09-15
+```
+
+**Section sources**
+- [telegram_manager.sh](file://telegram_manager.sh#L99-L101)
+- [scripts/telegram_tools/core/daily_persistence.py](file://scripts/telegram_tools/core/daily_persistence.py#L1-L150)
+
+### validate Command
+
+The `validate` command validates message completeness and detects gaps in the message sequence.
+
+**Syntax**: `./telegram_manager.sh validate <channel> [cache_file]`
+
+- **Required parameters**: `<channel>` - The Telegram channel identifier
+- **Optional parameters**: `[cache_file]` - Specific cache file to validate (if omitted, uses latest cache)
+
+**Expected behavior**: The command executes `gap_validator.py validate` with the provided parameters. It analyzes the message sequence in the cache file for the specified channel, checking for gaps in message IDs and reporting any inconsistencies.
+
+**Practical example**: To validate message completeness for "aiclubsweggs":
+```bash
+./telegram_manager.sh validate aiclubsweggs
+```
+
+**Section sources**
+- [telegram_manager.sh](file://telegram_manager.sh#L102-L108)
+- [scripts/telegram_tools/core/gap_validator.py](file://scripts/telegram_tools/core/gap_validator.py#L1-L120)
+
+### anchor Command
+
+The `anchor` command manages temporal anchors for precise message retrieval, supporting set, get, and list operations.
+
+**Syntax**: 
+```
+./telegram_manager.sh anchor set <channel> <message_id> <timestamp> [date]
+./telegram_manager.sh anchor get <channel> [date]
+./telegram_manager.sh anchor list [channel]
+```
+
+- **Required parameters**: Varies by subcommand
+- **Optional parameters**: Varies by subcommand
+
+**Expected behavior**: The command delegates to `temporal_anchor.py` with the appropriate subcommand. Temporal anchors provide a way to mark specific messages as reference points for future retrieval, enabling precise offset calculations when fetching messages.
+
+**Practical example**: To set a temporal anchor for message 72856 at 00:58:11:
+```bash
+./telegram_manager.sh anchor set aiclubsweggs 72856 00:58:11
+```
+
+**Section sources**
+- [telegram_manager.sh](file://telegram_manager.sh#L109-L165)
+- [scripts/telegram_tools/core/temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py#L1-L180)
+
 ## Filter Types
 
 The filtering system provides several predefined filter types that can be applied to message retrieval operations across multiple commands. These filters determine which messages are included in the output based on temporal criteria.
@@ -281,7 +392,7 @@ I --> J[Return Success]
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L10-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L10-L165)
 - [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh#L1-L244)
 
 ### Cache Validation
@@ -309,7 +420,7 @@ The test suite in `test_10_error_handling.sh` verifies these error conditions th
 
 **Section sources**
 - [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh#L1-L244)
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L165)
 
 ## Output Interpretation
 
@@ -332,13 +443,17 @@ Each command produces specific output that indicates its status and results:
 - **json**: Outputs JSON data to stdout for programmatic processing
 - **cache**: Shows cache statistics including file counts and sizes
 - **clean**: Reports removed cache files and completion status
+- **archive**: Confirms successful archiving of cache
+- **restore**: Confirms successful restoration of cache
+- **validate**: Reports validation results and any detected gaps
+- **anchor**: Provides feedback on anchor operations
 
 The output uses emoji indicators (✅, ❌, 📋, etc.) to provide visual feedback on operation status.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L165)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L178)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L193)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
 
 ## Integration with Python Modules
@@ -356,9 +471,13 @@ class TelegramManager {
 +json(channel, filter, mode)
 +cache()
 +clean(channel)
++archive(channel, date)
++restore(channel, date)
++validate(channel, cache_file)
++anchor(action, args)
 }
 class TelegramFetch {
-+fetch_and_cache(channel, limit, offset_id, suffix)
++fetch_and_cache(channel, limit, offset_id, suffix, use_anchor)
 +main()
 }
 class TelegramCache {
@@ -377,19 +496,41 @@ class TelegramJsonExport {
 +export_range_summary(messages)
 +main()
 }
+class DailyPersistence {
++archive(channel, date)
++restore(channel, date)
++main()
+}
+class GapValidator {
++validate(channel, cache_file)
++main()
+}
+class TemporalAnchor {
++set_anchor(channel, message_id, timestamp, date)
++get_anchor(channel, date)
++list_anchors(channel)
++calculate_fetch_offset(channel)
++main()
+}
 TelegramManager --> TelegramFetch : "delegates"
 TelegramManager --> TelegramCache : "delegates"
 TelegramManager --> TelegramFilter : "delegates"
 TelegramManager --> TelegramJsonExport : "delegates"
+TelegramManager --> DailyPersistence : "delegates"
+TelegramManager --> GapValidator : "delegates"
+TelegramManager --> TemporalAnchor : "delegates"
 TelegramManager --> Telethon : "uses for send"
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L165)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L178)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L193)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
 - [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L124)
+- [scripts/telegram_tools/core/daily_persistence.py](file://scripts/telegram_tools/core/daily_persistence.py#L1-L150)
+- [scripts/telegram_tools/core/gap_validator.py](file://scripts/telegram_tools/core/gap_validator.py#L1-L120)
+- [scripts/telegram_tools/core/temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py#L1-L180)
 
 ### Module Responsibilities
 
@@ -397,12 +538,18 @@ TelegramManager --> Telethon : "uses for send"
 - **telegram_cache.py**: Manages cache lifecycle, including validity checking, cleanup, and statistics reporting
 - **telegram_filter.py**: Processes cached messages with various filtering criteria and formats output for display
 - **telegram_json_export.py**: Provides JSON output for programmatic consumption, with options for summary or full data export
+- **daily_persistence.py**: Manages archiving and restoration of cache files for long-term storage
+- **gap_validator.py**: Validates message completeness and detects gaps in message sequences
+- **temporal_anchor.py**: Manages temporal anchors for precise message retrieval and offset calculation
 
 The bash script coordinates these modules by passing parameters, managing working directories, and handling the overall execution flow, creating a cohesive command-line interface from specialized components.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L165)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L178)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L146)
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L1-L193)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
 - [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L124)
+- [scripts/telegram_tools/core/daily_persistence.py](file://scripts/telegram_tools/core/daily_persistence.py#L1-L150)
+- [scripts/telegram_tools/core/gap_validator.py](file://scripts/telegram_tools/core/gap_validator.py#L1-L120)
+- [scripts/telegram_tools/core/temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py#L1-L180)

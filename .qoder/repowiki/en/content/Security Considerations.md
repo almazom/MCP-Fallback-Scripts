@@ -2,11 +2,21 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
-- [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh)
-- [tests/test_02_limit_parameter.sh](file://tests/test_02_limit_parameter.sh)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Updated in recent commit*
+- [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Added in recent commit*
+- [scripts/telegram_tools/core/temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py) - *Added in recent commit*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated documentation to reflect the new JSON-based architecture and centralized credential storage in `.env` file
+- Added new sections for Temporal Anchor and Daily Persistence security implications
+- Enhanced input validation and injection prevention details based on test cases
+- Updated diagram sources to reflect actual code structure
+- Added new file references for recently introduced components
+- Improved error handling and testing section with additional test coverage details
 
 ## Table of Contents
 1. [Credential Storage Risks](#credential-storage-risks)

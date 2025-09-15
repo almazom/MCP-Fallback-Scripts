@@ -2,12 +2,21 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
+- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Updated with CLI interface in recent commit*
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated with CLI interface in recent commit*
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Updated with CLI interface in recent commit*
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py)
 - [.env](file://.env)
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated Introduction to reflect new CLI capabilities in core modules
+- Revised Core Module Interfaces section to include CLI entry points
+- Added CLI usage examples in module-specific sections
+- Updated code examples to show both programmatic and CLI usage patterns
+- Enhanced API stability section to address CLI interface stability
+- Removed outdated assumptions about wrapper dependency
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -21,24 +30,27 @@
 9. [Troubleshooting and Best Practices](#troubleshooting-and-best-practices)
 
 ## Introduction
-This document provides comprehensive guidance on leveraging the core Python modules of the Telegram tools suite directly within custom applications. While these modules are designed to work through CLI scripts and the `telegram_manager.sh` wrapper, they expose well-defined public interfaces that enable direct integration into larger systems, automation workflows, and custom dashboards. The focus is on the three primary modules: `telegram_fetch.py`, `telegram_cache.py`, and `telegram_filter.py`, detailing their programmatic usage, dependencies, configuration requirements, and practical implementation patterns for advanced use cases.
+This document provides comprehensive guidance on leveraging the core Python modules of the Telegram tools suite directly within custom applications. The recent refactoring to a JSON-based architecture has enhanced the modularity and independence of these components. Each core module now features a documented CLI interface, enabling direct usage outside the `telegram_manager.sh` wrapper. This update details the programmatic and command-line interfaces of the primary modules: `telegram_fetch.py`, `telegram_cache.py`, and `telegram_filter.py`, covering their usage, dependencies, configuration requirements, and implementation patterns for advanced use cases.
 
 ## Core Module Interfaces
-The core modules expose distinct public functions that serve as entry points for direct Python integration. Each module follows a clean separation of concerns, allowing independent or combined usage based on application needs.
+The core modules expose both programmatic functions and CLI interfaces that serve as entry points for integration. Each module follows a clean separation of concerns, allowing independent or combined usage based on application needs. The recent refactoring has standardized the CLI interfaces across modules, making them more consistent and predictable.
 
 ```mermaid
 graph TD
 subgraph "telegram_fetch.py"
-fetch_and_cache["fetch_and_cache(channel, limit=100, offset_id=0, suffix='')"]:::function
+fetch_and_cache["fetch_and_cache(channel, limit=100, offset_id=0, suffix='', use_anchor=True)"]:::function
+main["main() - CLI interface"]:::function
 end
 subgraph "telegram_cache.py"
 is_cache_valid["is_cache_valid(channel, filter_type='today')"]:::function
 clean_old_caches["clean_old_caches(channel=None, keep_latest=3)"]:::function
 cache_info["cache_info()"]:::function
+main["main() - CLI interface"]:::function
 end
 subgraph "telegram_filter.py"
 filter_messages["filter_messages(channel, filter_type='today', pattern=None, limit=None)"]:::function
 display_messages["display_messages(messages, group_by_date=True)"]:::function
+main["main() - CLI interface"]:::function
 end
 subgraph "telegram_json_export.py"
 filter_messages_json["filter_messages_json(channel, filter_type='today')"]:::function
@@ -51,9 +63,9 @@ filter_messages_json --> |reads| cache_file
 ```
 
 **Diagram sources**
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L100-L140)
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L30-L100)
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L100-L150)
+- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L100-L140) - *Updated with enhanced CLI interface*
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L30-L100) - *Updated with standardized CLI commands*
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L100-L150) - *Updated with consistent CLI parameter structure*
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L30-L80)
 
 ## Module Initialization and Configuration
@@ -73,26 +85,79 @@ The modules automatically locate the `.env` file relative to their own path usin
 ## Using telegram_fetch.py Programmatically
 The `fetch_and_cache` function is the primary interface for retrieving messages from a Telegram channel and storing them in JSON format. It is an asynchronous function that must be awaited within an async context.
 
-To use this module in a standalone script, import the function and run it within an asyncio event loop. The function accepts parameters for the channel identifier, message limit, offset ID for pagination, and an optional suffix for the cache filename. It returns the path to the created cache file upon successful execution. Error handling should account for network issues, authentication failures, and invalid channel names.
+To use this module in a standalone script, import the function and run it within an asyncio event loop. The function accepts parameters for the channel identifier, message limit, offset ID for pagination, suffix for the cache filename, and a flag to enable/disable temporal anchoring. It returns the path to the created cache file upon successful execution. Error handling should account for network issues, authentication failures, and invalid channel names.
+
+The module also provides a CLI interface through its `main()` function, accessible by running the script directly with command-line arguments:
+
+```python
+# Programmatic usage
+import asyncio
+from scripts.telegram_tools.core.telegram_fetch import fetch_and_cache
+
+async def main():
+    cache_path = await fetch_and_cache("@aiclubsweggs", limit=100, suffix="today")
+    print(f"Cache created at: {cache_path}")
+
+asyncio.run(main())
+```
+
+```bash
+# CLI usage
+python scripts/telegram_tools/core/telegram_fetch.py aiclubsweggs 100 0 today --no-anchor
+```
 
 **Section sources**
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L100-L140)
+- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L100-L140) - *Updated with --no-anchor flag and enhanced CLI*
 
 ## Using telegram_cache.py for Cache Management
 The `telegram_cache.py` module provides utilities for managing the lifecycle of cached message data. The `is_cache_valid` function checks whether the latest cache file for a given channel is still valid based on configurable TTL (Time-To-Live) rules, which vary by filter type (e.g., 5 minutes for "today", 60 minutes for "recent"). This function is essential for building applications that need to balance freshness with performance.
 
 The `clean_old_caches` function allows for programmatic cleanup of outdated cache files, retaining only the most recent N files per channel. This is useful for automated maintenance tasks. The `cache_info` function provides detailed statistics about the current cache state, which can be integrated into monitoring dashboards.
 
+The module includes a comprehensive CLI interface with commands for cache inspection and management:
+
+```python
+# Programmatic usage
+from scripts.telegram_tools.core.telegram_cache import is_cache_valid, clean_old_caches
+
+valid, cache_file = is_cache_valid("aiclubsweggs", "today")
+if not valid:
+    clean_old_caches("aiclubsweggs")
+    # Trigger fresh fetch
+```
+
+```bash
+# CLI usage
+python scripts/telegram_tools/core/telegram_cache.py info
+python scripts/telegram_tools/core/telegram_cache.py clean aiclubsweggs
+python scripts/telegram_tools/core/telegram_cache.py check aiclubsweggs today
+```
+
 **Section sources**
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L30-L100)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L30-L100) - *Updated with standardized CLI commands*
 
 ## Using telegram_filter.py for Message Filtering
 The `filter_messages` function enables powerful filtering of cached messages based on date, text patterns, and result limits. It supports various filter types including "today", "yesterday", "last:N" days, specific dates, and "all" messages. Pattern filtering uses Python's `re` module for case-insensitive regex matching.
 
 This function returns a list of message dictionaries, making it ideal for integration into data processing pipelines. The `display_messages` function is provided for human-readable output but is less relevant for programmatic use. For applications requiring raw JSON output, the `telegram_json_export.py` module's `filter_messages_json` function offers a similar interface without the display formatting.
 
+The module features a robust CLI interface that mirrors its programmatic capabilities:
+
+```python
+# Programmatic usage
+from scripts.telegram_tools.core.telegram_filter import filter_messages, display_messages
+
+messages = filter_messages("aiclubsweggs", "last:3", pattern="gemini", limit=10)
+display_messages(messages)
+```
+
+```bash
+# CLI usage
+python scripts/telegram_tools/core/telegram_filter.py aiclubsweggs last:3 'gemini' 10
+```
+
 **Section sources**
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L100-L150)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L100-L150) - *Updated with enhanced border detection*
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L30-L80)
 
 ## Advanced Use Cases and Integration Patterns
@@ -100,13 +165,15 @@ These modules can be combined to build sophisticated applications. For example, 
 
 Specialized filtering logic can be implemented by processing the message list returned by `filter_messages`, adding custom metadata extraction or sentiment analysis. The modules' design supports embedding into larger applications by treating the cache directory as a shared data layer, enabling multiple components to access the same message data without redundant API calls.
 
+The standardized CLI interfaces allow for easy integration into shell scripts, cron jobs, and containerized workflows, expanding the range of possible deployment patterns.
+
 **Section sources**
 - [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L100-L140)
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L30-L100)
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L100-L150)
 
 ## API Stability and Version Compatibility
-The public interfaces of these modules are considered stable for the current version. However, internal implementation details, such as the cache file naming convention and JSON structure, are subject to change. Applications should depend on the documented function signatures and not on the specific format of cache files.
+The public interfaces of these modules are considered stable for the current version. The recent refactoring has solidified both the programmatic and CLI interfaces, making them reliable for external integration. However, internal implementation details, such as the cache file naming convention and JSON structure, are subject to change. Applications should depend on the documented function signatures and not on the specific format of cache files.
 
 When upgrading the tools suite, verify that the function parameters and return values remain consistent. The dependency on `telethon` should be pinned to a compatible version to avoid breaking changes. Long-term maintenance is facilitated by the modular design, which isolates changes to individual components.
 
@@ -117,6 +184,8 @@ When upgrading the tools suite, verify that the function parameters and return v
 
 ## Troubleshooting and Best Practices
 Ensure the `telegram_cache` directory exists and is writable. Handle exceptions from `telethon` operations, particularly during network failures. When using the modules in a web context, avoid blocking the main thread by running async functions in a separate executor. For high-frequency polling, leverage the TTL-based cache validation to minimize unnecessary API calls. Always validate the return values of functions, as they may indicate failure conditions (e.g., no cache found).
+
+When using the CLI interfaces in automated scripts, check the exit codes to handle errors appropriately. The standardized command structure across modules simplifies error handling and logging in complex workflows.
 
 **Section sources**
 - [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L140-L146)

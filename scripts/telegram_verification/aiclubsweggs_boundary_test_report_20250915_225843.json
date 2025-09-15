@@ -1,0 +1,69 @@
+{
+  "test_suite_info": {
+    "channel": "@aiclubsweggs",
+    "total_tests": 3,
+    "generated_at": "2025-09-15T22:58:43.304626+03:00",
+    "test_suite_version": "1.0"
+  },
+  "summary": {
+    "successful_tests": 3,
+    "failed_tests": 0,
+    "no_message_tests": 0,
+    "average_confidence": 1.0,
+    "total_media_downloaded": 3,
+    "total_verification_methods": 9
+  },
+  "detailed_results": [
+    {
+      "date": "2025-09-14",
+      "channel": "@aiclubsweggs",
+      "test_start_time": "2025-09-15T22:58:30.427855+03:00",
+      "status": "success",
+      "confidence_score": 1.0,
+      "verification_methods": 3,
+      "media_downloaded": true,
+      "content_verified": true,
+      "errors": [],
+      "message_id": 72849,
+      "message_time": "2025-09-14 06:41:36",
+      "message_content": "📦 [Media] https://research.google/blog/vaultgemma-the-worlds-most-capable-differentially-private-llm...",
+      "content_hash": "604ffa99134cd28d56d6336d4034a4fdbcc24bf24e497fed1afb6a789eb90d39",
+      "test_end_time": "2025-09-15T22:58:36.392390+03:00",
+      "test_duration": 5.964535
+    },
+    {
+      "date": "2025-09-13",
+      "channel": "@aiclubsweggs",
+      "test_start_time": "2025-09-15T22:58:36.392442+03:00",
+      "status": "success",
+      "confidence_score": 1.0,
+      "verification_methods": 3,
+      "media_downloaded": true,
+      "content_verified": true,
+      "errors": [],
+      "message_id": 72803,
+      "message_time": "2025-09-13 08:36:29",
+      "message_content": "📷 [Photo] #gemini_cli, #memory",
+      "content_hash": "8fa90f6ad6898ffd49e281021f04d7ad7ba449fb6f9e0d96d86ffaef59007db9",
+      "test_end_time": "2025-09-15T22:58:39.839869+03:00",
+      "test_duration": 3.447427
+    },
+    {
+      "date": "2025-09-12",
+      "channel": "@aiclubsweggs",
+      "test_start_time": "2025-09-15T22:58:39.839903+03:00",
+      "status": "success",
+      "confidence_score": 1.0,
+      "verification_methods": 3,
+      "media_downloaded": true,
+      "content_verified": true,
+      "errors": [],
+      "message_id": 72785,
+      "message_time": "2025-09-12 10:10:25",
+      "message_content": "📷 [Photo] #Qoder память, как сервис",
+      "content_hash": "7cef49c41f48698cedc1649fa46798c655e918bc5fa3e298840780321b46b530",
+      "test_end_time": "2025-09-15T22:58:43.304588+03:00",
+      "test_duration": 3.464685
+    }
+  ]
+}

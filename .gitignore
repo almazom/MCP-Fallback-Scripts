@@ -63,6 +63,12 @@ telegram_errors.log
 telegram_debug.log
 telegram_*.log
 
+# Telegram media files
+telegram_media/
+
+# Telegram verification files
+telegram_verification/
+
 # Telegram bot data
 bot_token.txt
 bot_credentials.json

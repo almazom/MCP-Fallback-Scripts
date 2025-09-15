@@ -2,10 +2,18 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated implementation details to reflect the use of Telethon with credentials from `.env` file
+- Enhanced error handling section to reflect actual behavior based on code analysis
+- Clarified security considerations regarding credential storage and session management
+- Verified and updated all examples and usage instructions
+- Removed any outdated assumptions about error handling in Python script
 
 ## Table of Contents
 1. [Introduction](#introduction)

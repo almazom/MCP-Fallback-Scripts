@@ -22,7 +22,7 @@ except ImportError:
     print("ERROR: telethon not found. Install with: pip install telethon", file=sys.stderr)
     sys.exit(1)
 
-async def fetch_and_cache(channel, limit=100, offset_id=0, suffix="", use_anchor=True):
+async def fetch_and_cache(channel, limit=100, offset_id=0, suffix="", use_anchor=True, fetch_media=False):
     """Fetch messages and save to cache with full metadata
 
     Args:
@@ -31,6 +31,7 @@ async def fetch_and_cache(channel, limit=100, offset_id=0, suffix="", use_anchor
         offset_id: Message ID to start from (0 for latest)
         suffix: Suffix for cache filename
         use_anchor: Whether to use temporal anchoring for smart offset
+        fetch_media: Whether to download media files
     """
 
     # Initialize temporal anchor and daily persistence
@@ -101,6 +102,8 @@ async def fetch_and_cache(channel, limit=100, offset_id=0, suffix="", use_anchor
 
         # Handle media
         text_content = message.message or ''
+        media_info = None
+
         if hasattr(message, 'media') and message.media:
             if hasattr(message.media, 'photo'):
                 text_content = f'📷 [Photo] {text_content}'.strip()
@@ -108,6 +111,34 @@ async def fetch_and_cache(channel, limit=100, offset_id=0, suffix="", use_anchor
                 text_content = f'📎 [File] {text_content}'.strip()
             else:
                 text_content = f'📦 [Media] {text_content}'.strip()
+
+            # Download media if requested
+            if fetch_media:
+                try:
+                    media_dir = Path(__file__).parent.parent.parent.parent / "telegram_media" / f"msg_{message.id}"
+                    media_dir.mkdir(parents=True, exist_ok=True)
+
+                    media_path = await client.download_media(message, str(media_dir))
+                    if media_path:
+                        import hashlib
+                        media_path = Path(media_path)
+
+                        # Generate content hash
+                        content_hash = hashlib.sha256()
+                        with open(media_path, 'rb') as f:
+                            for chunk in iter(lambda: f.read(4096), b""):
+                                content_hash.update(chunk)
+
+                        media_info = {
+                            'file_path': str(media_path),
+                            'file_name': media_path.name,
+                            'file_size': media_path.stat().st_size,
+                            'content_hash': content_hash.hexdigest(),
+                            'download_time': datetime.now(moscow_tz).isoformat()
+                        }
+                        print(f"📎 Downloaded: {media_path.name}")
+                except Exception as e:
+                    print(f"❌ Failed to download media for message {message.id}: {e}")
 
         msg_data = {
             'id': message.id,
@@ -117,7 +148,8 @@ async def fetch_and_cache(channel, limit=100, offset_id=0, suffix="", use_anchor
             'sender': sender_name,
             'views': getattr(message, 'views', None),
             'forwards': getattr(message, 'forwards', None),
-            'reply_to_id': getattr(message.reply_to, 'reply_to_msg_id', None) if hasattr(message, 'reply_to') and message.reply_to else None
+            'reply_to_id': getattr(message.reply_to, 'reply_to_msg_id', None) if hasattr(message, 'reply_to') and message.reply_to else None,
+            'media_info': media_info
         }
         messages_data.append(msg_data)
 
@@ -161,14 +193,18 @@ async def fetch_and_cache(channel, limit=100, offset_id=0, suffix="", use_anchor
     print(f"📁 Cache file: {cache_file}")
     if fetch_strategy != "manual":
         print(f"🎯 Fetch strategy: {fetch_strategy}")
+    if fetch_media:
+        media_count = sum(1 for msg in messages_data if msg.get('media_info'))
+        print(f"📎 Downloaded media for {media_count} messages")
     return str(cache_file)
 
 async def main():
     if len(sys.argv) < 2:
-        print("Usage: python telegram_fetch.py <channel> [limit] [offset_id] [suffix] [--no-anchor]")
+        print("Usage: python telegram_fetch.py <channel> [limit] [offset_id] [suffix] [--no-anchor] [--fetch-media]")
         print("Example: python telegram_fetch.py aiclubsweggs 100")
         print("Example: python telegram_fetch.py aiclubsweggs 100 72857 older")
         print("Example: python telegram_fetch.py aiclubsweggs 100 0 today --no-anchor")
+        print("Example: python telegram_fetch.py aiclubsweggs 100 0 media --fetch-media")
         sys.exit(1)
 
     channel = sys.argv[1]
@@ -179,13 +215,17 @@ async def main():
     offset_id = int(sys.argv[3]) if len(sys.argv) > 3 else 0
     suffix = sys.argv[4] if len(sys.argv) > 4 else ""
 
-    # Check for --no-anchor flag
+    # Check for flags
     use_anchor = True
+    fetch_media = False
+
     if "--no-anchor" in sys.argv:
         use_anchor = False
+    if "--fetch-media" in sys.argv:
+        fetch_media = True
 
     try:
-        await fetch_and_cache(channel, limit, offset_id, suffix, use_anchor)
+        await fetch_and_cache(channel, limit, offset_id, suffix, use_anchor, fetch_media)
     except Exception as e:
         print(f"❌ Error: {str(e)}", file=sys.stderr)
         sys.exit(1)

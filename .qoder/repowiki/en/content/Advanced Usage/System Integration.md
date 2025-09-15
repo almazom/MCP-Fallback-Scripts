@@ -2,12 +2,20 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py)
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
-- [telegram_manager.sh](file://telegram_manager.sh)
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
+- [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py) - *Updated in recent commit for JSON-based architecture*
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Updated in recent commit for enhanced filtering and border detection*
+- [telegram_manager.sh](file://telegram_manager.sh) - *Modified to support new integration features*
+- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Core fetching functionality*
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Cache management and TTL policies*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated documentation to reflect the radical refactoring of the JSON-based architecture
+- Enhanced descriptions of data export capabilities with new filtering and validation features
+- Added details about fallback border detection and auto-fetching mechanisms
+- Refreshed code examples to match current implementation
+- Updated diagram sources to reflect actual code structure changes
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -22,7 +30,7 @@
 The FALLBACK_SCRIPTS toolset provides a comprehensive framework for integrating Telegram message data with external systems. This document details the integration capabilities of the system, focusing on data export, filtering, notification triggering, and secure deployment patterns. The architecture centers around cached JSON data that can be processed and exported in various formats for consumption by analytics platforms, monitoring tools, and alerting systems.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L110)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L166)
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L125)
 
 ## Data Export for Analytics Platforms
@@ -95,6 +103,8 @@ python telegram_filter.py @system_logs today "ERROR|CRITICAL|FAILURE"
 ```
 
 This would extract all messages from today containing any of the specified alert keywords, which could then trigger external alerting systems.
+
+The script includes enhanced border detection that automatically fetches additional messages when insufficient data is available for proper validation. This ensures accurate date-based filtering even with incomplete caches.
 
 **Section sources**
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L239)
@@ -246,7 +256,7 @@ style F fill:#7B68EE,stroke:#333
 
 **Diagram sources**
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L97-L124)
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L110)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L166)
 
 Example metrics exporter:
 ```python
@@ -305,7 +315,7 @@ monitoring:
 **Section sources**
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py#L1-L125)
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L239)
-- [telegram_manager.sh](file://telegram_manager.sh#L1-L110)
+- [telegram_manager.sh](file://telegram_manager.sh#L1-L166)
 
 ## Security Considerations
 

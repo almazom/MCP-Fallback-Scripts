@@ -2,9 +2,18 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
-- [telegram_manager.sh](file://telegram_manager.sh)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in recent commit*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated implementation details to reflect the smart cleanup logic that retains only the latest N cache files per channel
+- Corrected description of cleanup behavior to align with actual code logic
+- Removed outdated claims about preserving "most recent cache entries" without specifying the retention count
+- Updated error handling section to reflect actual normalization and deletion logic
+- Revised examples to match current command behavior
+- Removed incorrect references to TTL-based cleanup in performance section
 
 ## Table of Contents
 1. [Command Syntax and Usage](#command-syntax-and-usage)
@@ -20,11 +29,11 @@
 
 The `clean` command provides cache management functionality through the `telegram_manager.sh` script. The syntax follows the pattern `clean [channel]`, where the channel parameter is optional. When no channel is specified, the command performs a full cleanup of all cached data across all channels. When a specific channel is provided, only the cache files associated with that channel are cleaned.
 
-The command is accessible as a top-level option in the `telegram_manager.sh` script, making it easily available for users who need to manage their Telegram message cache. The implementation ensures that only outdated cache files are removed while preserving the most recent cache entries to maintain some level of data availability.
+The command is accessible as a top-level option in the `telegram_manager.sh` script, making it easily available for users who need to manage their Telegram message cache. The implementation ensures that older cache files are removed while preserving the most recent cache entries based on a fixed retention policy.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L101-L109)
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L141-L149)
+- [telegram_manager.sh](file://telegram_manager.sh#L139)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L84)
 
 ## Implementation Details
 
@@ -54,12 +63,12 @@ Shell-->>User : Cleanup results
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L101-L109)
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L78)
+- [telegram_manager.sh](file://telegram_manager.sh#L139)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L84)
 
 **Section sources**
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L78)
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L155-L157)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L84)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L141-L149)
 
 ## Use Cases
 
@@ -74,7 +83,7 @@ The `clean` command serves several important use cases in the Telegram message m
 **Cache Maintenance**: Regular cleanup prevents the cache from growing unbounded, maintaining optimal performance of cache operations and reducing the time required for cache-related operations like listing or searching.
 
 **Section sources**
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L78)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L84)
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L118-L149)
 
 ## Selective vs Full Cleanup
@@ -103,10 +112,10 @@ Remove --> Complete["Cleanup complete"]
 ```
 
 **Diagram sources**
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L78)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L84)
 
 **Section sources**
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L78)
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L84)
 
 ## Integration with Read Command
 
@@ -127,13 +136,11 @@ Cache deletion has significant implications for both performance and API usage p
 
 The performance impact manifests in longer response times for commands that follow a cache cleanup, as network requests to fetch messages take considerably longer than reading from local cache files. However, this trade-off is often acceptable when data freshness is more important than speed.
 
-The system's design mitigates some of these impacts by retaining the most recent cache files (typically 3) even during cleanup operations. This hybrid approach ensures that some data remains available locally while still forcing refresh of stale content. Additionally, the TTL (time-to-live) system in `telegram_cache.py` automatically invalidates cache based on age and message recency, reducing the need for manual cleanup in many scenarios.
-
-Users should consider the timing of cleanup operations, avoiding peak usage periods when possible to minimize the impact of increased API load.
+The system's design mitigates some of these impacts by retaining the most recent cache files (typically 3) even during cleanup operations. This hybrid approach ensures that some data remains available locally while still forcing refresh of stale content. Users should consider the timing of cleanup operations, avoiding peak usage periods when possible to minimize the impact of increased API load.
 
 **Section sources**
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L59-L84)
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L1-L42)
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L3-L10)
 
 ## Error Handling
 
@@ -179,5 +186,5 @@ This command first cleans the cache for "aiclubsweggs", then fetches fresh messa
 This alternative syntax achieves the same result as using `--clean`, providing flexibility in how users specify cache cleanup.
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L101-L109)
+- [telegram_manager.sh](file://telegram_manager.sh#L139)
 - [telegram_manager.sh](file://telegram_manager.sh#L34-L58)

@@ -2,11 +2,20 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh)
-- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in recent commit*
+- [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Enhanced with JSON-based architecture in recent commit*
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated documentation to reflect JSON-based architecture enhancements in `telegram_cache.py`
+- Added details about message count, file size, and age metrics in cache output
+- Enhanced description of TTL (time-to-live) rules and cache validation logic
+- Updated implementation details to reflect current code structure
+- Revised output format section to accurately describe current emoji usage and data presentation
+- Improved integration section with accurate command relationships
 
 ## Table of Contents
 1. [Command Overview](#command-overview)

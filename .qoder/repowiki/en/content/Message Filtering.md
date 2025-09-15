@@ -2,13 +2,21 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Updated in recent commit with JSON-based architecture and auto-fetch capabilities*
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
 - [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py)
 - [boundary_aware_first_message_detector.sh](file://tests/boundary_aware_first_message_detector.sh)
 - [timezone_aware_first_message_detector.sh](file://tests/timezone_aware_first_message_detector.sh)
 - [test_first_message_border_detection.sh](file://tests/test_first_message_border_detection.sh)
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated border detection logic to reflect auto-fetching fallback mechanism
+- Enhanced fallback mechanisms section with detailed auto-fetch implementation
+- Added timezone-aware validation details in border detection
+- Updated code examples and flowchart to match current implementation
+- Improved cache validation interface details
 
 ## Table of Contents
 1. [Introduction](#introduction)

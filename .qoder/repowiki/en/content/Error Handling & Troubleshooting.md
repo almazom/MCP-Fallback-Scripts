@@ -2,12 +2,20 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh)
-- [test_10_error_handling.sh](file://tests/test_10_error_handling.sh)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [test_10_error_handling.sh](file://tests/test_10_error_handling.sh) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated documentation to reflect the JSON-based architecture refactoring
+- Enhanced error handling description to show distributed responsibility between bash and Python components
+- Updated test case references to align with current implementation
+- Added clarification on network-related error handling limitations
+- Maintained and updated source tracking annotations for all referenced files
 
 ## Table of Contents
 1. [Common Failure Modes](#common-failure-modes)
@@ -28,7 +36,7 @@ The system is designed to handle several common failure scenarios:
 - **Invalid Parameters**: Incorrect channel names, malformed date ranges, out-of-bounds limits
 - **Input Injection Attempts**: Malicious inputs containing shell commands or special characters
 
-These failure modes are systematically validated through comprehensive testing and defensive programming practices.
+These failure modes are systematically validated through comprehensive testing and defensive programming practices. The recent refactoring to a JSON-based architecture has distributed error handling responsibilities between the bash wrapper and Python components, improving modularity and error context preservation.
 
 **Section sources**
 - [telegram_manager.sh](file://telegram_manager.sh#L2-L109)
@@ -48,7 +56,7 @@ This configuration prevents silent failures and ensures the script terminates on
 [[ -z "${2:-}" ]] && echo "Usage: $0 fetch <channel> [limit]" && exit 1
 ```
 
-Each command validates its required parameters before execution, providing clear error messages to guide users toward correct usage.
+Each command validates its required parameters before execution, providing clear error messages to guide users toward correct usage. The recent architectural changes have maintained this error handling foundation while delegating more specific validation to Python components.
 
 **Section sources**
 - [telegram_manager.sh](file://telegram_manager.sh#L2-L109)
@@ -72,7 +80,7 @@ except Exception as e:
     sys.exit(1)
 ```
 
-Errors are formatted with emoji indicators for quick visual recognition and include sufficient context for diagnosis.
+Errors are formatted with emoji indicators for quick visual recognition and include sufficient context for diagnosis. The JSON-based architecture refactoring has enhanced this system by ensuring error context is preserved across component boundaries.
 
 **Section sources**
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L14-L146)
@@ -175,7 +183,7 @@ The test suite validates:
 - Date format validation
 - Edge case handling
 
-Results are logged to `test_results_10.log` with detailed coverage analysis.
+Results are logged to `test_results_10.log` with detailed coverage analysis. Note that network-related errors (connection timeout, rate limits) require actual Telegram API integration for complete testing and are currently documented rather than fully tested.
 
 ## Recovery & Resilience
 

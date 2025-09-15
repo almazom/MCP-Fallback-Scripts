@@ -2,10 +2,19 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh)
-- [.env](file://.env)
-- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated with enhanced security and credential handling*
+- [.env](file://.env) - *Sensitive credentials file excluded via .gitignore*
+- [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Core Telegram message fetching logic*
+- [.gitignore](file://.gitignore) - *Added security-focused file exclusions*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated security practices to reflect enhanced `.gitignore` rules for credential protection
+- Added emphasis on file filtering and repository hygiene in environment setup
+- Enhanced security best practices with reference to updated `.gitignore` patterns
+- Maintained accuracy of credential loading and script resolution mechanisms
+- No structural changes to existing workflows or configuration requirements
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -33,10 +42,11 @@ TELEGRAM_API_HASH="a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
 TELEGRAM_SESSION="1234567890abcdef1234567890abcdef1234567890abcdef"
 ```
 
-The `.env` file should be placed in the same directory as `telegram_manager.sh`. It is critical that this file is not committed to version control systems due to its sensitive nature.
+The `.env` file should be placed in the same directory as `telegram_manager.sh`. It is critical that this file is not committed to version control systems due to its sensitive nature. The `.gitignore` file has been updated to explicitly exclude various credential and session files, including `.env.local`, `.env.development`, and session files like `*.session` and `telethon.session*`, ensuring repository hygiene and enhanced security.
 
 **Section sources**
 - [telegram_manager.sh](file://telegram_manager.sh#L65-L75)
+- [.gitignore](file://.gitignore#L15-L25) - *Added credential file exclusions*
 
 ## Credential Loading Mechanism
 The `send` command within `telegram_manager.sh` accesses credentials from the `.env` file through an embedded Python script. When the `send` subcommand is invoked, the script dynamically reads the `.env` file, parses key-value pairs, and loads them into a dictionary for use in establishing a Telegram client connection.
@@ -125,7 +135,7 @@ To protect your Telegram credentials and maintain system security:
 
 - **File Permissions**: Set restrictive permissions on the `.env` file using `chmod 600 .env` to allow only the owner to read and write
 - **Environment Isolation**: Avoid using these credentials in shared or public environments
-- **Version Control**: Add `.env` to your `.gitignore` file to prevent accidental commits
+- **Version Control**: Add `.env` to your `.gitignore` file to prevent accidental commits. The `.gitignore` has been enhanced to exclude various credential-related files including `.env.local`, `*.session`, and `auth_tokens.json`
 - **Session Management**: Regularly regenerate session strings and invalidate old ones through Telegram's active sessions management
 - **API Key Rotation**: Periodically recreate your API credentials and update them across all systems
 - **Access Monitoring**: Regularly check your active Telegram sessions and terminate any unfamiliar ones
@@ -135,6 +145,7 @@ Storing credentials in a dedicated, restricted `.env` file rather than embedding
 **Section sources**
 - [.env](file://.env)
 - [telegram_manager.sh](file://telegram_manager.sh#L65-L75)
+- [.gitignore](file://.gitignore#L15-L45) - *Enhanced credential and session file exclusions*
 
 ## Troubleshooting Common Issues
 This section addresses frequent setup issues and their resolutions.
