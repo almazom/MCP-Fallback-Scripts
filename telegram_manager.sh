@@ -93,7 +93,12 @@ asyncio.run(send_message())
         ;;
     validate)
         [[ -z "${2:-}" ]] && echo "Usage: $0 validate <channel> [cache_file]" && exit 1
-        cd "$TELEGRAM_DIR" && python3 gap_validator.py validate "$2" "${3:-}"
+        cd "$TELEGRAM_DIR"
+        if [[ -n "${3:-}" ]]; then
+            python3 gap_validator.py validate "$2" "$3"
+        else
+            python3 gap_validator.py validate "$2"
+        fi
         ;;
     anchor)
         action="${2:-list}"
@@ -104,7 +109,12 @@ asyncio.run(send_message())
                 ;;
             get)
                 [[ -z "${3:-}" ]] && echo "Usage: $0 anchor get <channel> [date]" && exit 1
-                cd "$TELEGRAM_DIR" && python3 temporal_anchor.py get "$3" "${4:-}"
+                cd "$TELEGRAM_DIR"
+                if [[ -n "${4:-}" ]]; then
+                    python3 temporal_anchor.py get "$3" "$4"
+                else
+                    python3 temporal_anchor.py get "$3"
+                fi
                 ;;
             list)
                 cd "$TELEGRAM_DIR" && python3 temporal_anchor.py list "${3:-}"

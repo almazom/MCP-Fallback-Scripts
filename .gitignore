@@ -89,6 +89,7 @@ current_state.json
 health.log
 metrics.json
 monitoring_data.json
+telegram_cache/
 
 # Backup and rollback files
 rollback_points/

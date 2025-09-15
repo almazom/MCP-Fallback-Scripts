@@ -8,8 +8,9 @@ import asyncio
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
+import pytz
 
 try:
     from telethon import TelegramClient
@@ -42,6 +43,7 @@ async def fetch_large_batch(channel, total_limit=1000):
     entity = await client.get_entity(channel)
 
     all_messages = []
+    moscow_tz = pytz.timezone('Europe/Moscow')
     offset_id = 0
     batch_size = 100  # Telegram API limit per request
 
@@ -72,7 +74,7 @@ async def fetch_large_batch(channel, total_limit=1000):
         # Process messages
         for message in history.messages:
             # Convert to Moscow time (UTC+3)
-            msk_date = message.date.astimezone(timezone.utc).replace(tzinfo=None)
+            msk_date = message.date.astimezone(moscow_tz)
             msk_timestamp = msk_date.strftime('%Y-%m-%d %H:%M:%S')
 
             # Extract sender name
@@ -127,7 +129,7 @@ async def fetch_large_batch(channel, total_limit=1000):
     cache_data = {
         'meta': {
             'channel': channel,
-            'cached_at': datetime.now().isoformat(),
+            'cached_at': datetime.now(moscow_tz).isoformat(),
             'total_messages': len(all_messages),
             'limit_requested': total_limit,
             'fetch_method': 'large_batch'
