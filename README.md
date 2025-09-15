@@ -46,6 +46,11 @@ pip install telethon
 # Ensure you have jq for JSON processing
 sudo apt install jq  # Ubuntu/Debian
 brew install jq      # macOS
+
+# (Optional) Enable OCR for media descriptions
+sudo apt install tesseract-ocr  # Ubuntu/Debian
+brew install tesseract          # macOS
+pip install pillow pytesseract
 ```
 
 ### Setup
@@ -107,6 +112,39 @@ brew install jq      # macOS
 ```bash
 ./telegram_manager.sh fetch aiclubsweggs 50
 ./telegram_manager.sh fetch @mychannel 200
+```
+
+### `fetch-media` - Download Messages with Media Files
+```bash
+./telegram_manager.sh fetch-media <channel> [limit]
+```
+- **Purpose**: Fetch recent messages and download attached media locally
+- **Media directory**: Saved under `telegram_media/msg_<message_id>/`
+- **When to use**: Run before OCR so images exist on disk
+
+**Example:**
+```bash
+./telegram_manager.sh fetch-media aiclubsweggs 200
+```
+
+### `ocr-cache` - Cache OCR Text for Media
+```bash
+./telegram_manager.sh ocr-cache <channel> [filter] [--refresh] [--lang=LANG] [--limit N] [--display]
+```
+- **Purpose**: Generate and reuse OCR/description text for downloaded images
+- **Filter**: Same as `read` (`today`, `2025-09-15`, etc.) to limit which messages are processed
+- **Storage**: Results saved in `telegram_cache/media_ocr_cache.json` keyed by channel + message id
+- **Reuse**: `read` automatically shows cached OCR snippets for media posts
+- **Refresh**: Use `--refresh` after updating the image or OCR dependencies
+- **Requirements**: Pillow + pytesseract + system Tesseract (see prerequisites). If they are missing, the cache stores the error so you can rerun later.
+
+**Examples:**
+```bash
+# Generate OCR for today's posts and print the extracted text
+./telegram_manager.sh ocr-cache aiclubsweggs today --display
+
+# Re-run OCR in English only for the last 50 media messages
+./telegram_manager.sh ocr-cache aiclubsweggs last:7 --limit 50 --lang eng --refresh
 ```
 
 ### `read` - Smart Cached Reading

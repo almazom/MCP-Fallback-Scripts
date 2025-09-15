@@ -148,6 +148,10 @@ asyncio.run(send_message())
         [[ -z "${2:-}" ]] && echo "Usage: $0 fetch-media <channel> [limit]" && exit 1
         cd "$TELEGRAM_DIR" && python3 telegram_fetch.py "$2" "${3:-100}" 0 "media" --fetch-media
         ;;
+    ocr-cache)
+        [[ -z "${2:-}" ]] && echo "Usage: $0 ocr-cache <channel> [filter] [--refresh] [--lang=LANG] [--limit N] [--display]" && exit 1
+        cd "$TELEGRAM_DIR" && python3 media_ocr_cache.py "$2" "${@:3}"
+        ;;
     verify-boundaries-cache)
         [[ -z "${2:-}" ]] || [[ -z "${3:-}" ]] || [[ -z "${4:-}" ]] && echo "Usage: $0 verify-boundaries-cache <channel> <date> <cache_file>" && exit 1
         cd "$TELEGRAM_DIR" && python3 border_message_validator.py "$2" "$3" --verify-cache "$4"
@@ -213,6 +217,7 @@ ADVANCED VERIFICATION (NEW - 10/10 CONFIDENCE):
   test-boundaries <channel> [start_date] [days] 🧪 Comprehensive multi-day boundary testing
   verify-content <cache_file> [--auto-correct]  🔍 Verify cache against live data with auto-fix
   fetch-media <channel> [limit]             📎 Fetch messages with automatic media download
+  ocr-cache <channel> [filter] [options]   📝 Generate & reuse OCR descriptions for media
   verify-boundaries-cache <channel> <date> <cache> Compare cached vs live boundaries
 
 AI ANALYSIS:

@@ -10,12 +10,27 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
+from media_ocr_cache import DEFAULT_CACHE_PATH, OCRCache
+
+_OCR_CACHE = None
+
+
+def get_ocr_cache():
+    """Lazily load the OCR cache to avoid unnecessary disk reads."""
+    global _OCR_CACHE
+    if _OCR_CACHE is None:
+        _OCR_CACHE = OCRCache(DEFAULT_CACHE_PATH)
+    return _OCR_CACHE
+
 def find_latest_cache(channel):
     """Find the most recent cache file for a channel"""
     cache_dir = Path(__file__).parent.parent.parent.parent / "telegram_cache"
     clean_channel = channel.replace('@', '').replace('/', '_')
 
-    cache_files = sorted(cache_dir.glob(f"{clean_channel}_*.json"))
+    cache_files = sorted(
+        cache_dir.glob(f"{clean_channel}_*.json"),
+        key=lambda p: p.stat().st_mtime
+    )
     return cache_files[-1] if cache_files else None
 
 def validate_border_detection(messages, filtered, target_date, channel=None):
@@ -173,11 +188,18 @@ def filter_messages(channel, filter_type="today", pattern=None, limit=None):
 
     return filtered
 
-def display_messages(messages, group_by_date=True):
+def display_messages(messages, channel=None, group_by_date=True):
     """Display messages in a readable format"""
     if not messages:
         print("📭 No messages found")
         return
+
+    ocr_cache = None
+    if channel:
+        try:
+            ocr_cache = get_ocr_cache()
+        except Exception as exc:
+            print(f"⚠️  Unable to load OCR cache: {exc}")
 
     if group_by_date:
         # Group by date
@@ -198,6 +220,19 @@ def display_messages(messages, group_by_date=True):
                 print(f"    👁️ {msg['views']} views")
             if msg.get('reply_to_id'):
                 print(f"    ↪️ Reply to message {msg['reply_to_id']}")
+            if ocr_cache and msg.get('media_info'):
+                entry = ocr_cache.get_entry(channel, msg['id'])
+                if entry:
+                    ocr_text = (entry.get('ocr_text') or '').strip()
+                    if ocr_text:
+                        preview = ocr_text if len(ocr_text) <= 200 else ocr_text[:197] + '...'
+                        print(f"    📝 OCR: {preview}")
+                    elif entry.get('error'):
+                        print(f"    ⚠️ OCR cached error: {entry['error']}")
+                    elif entry.get('image_metadata'):
+                        meta = entry['image_metadata']
+                        if meta.get('width') and meta.get('height'):
+                            print(f"    🖼️ Image: {meta['width']}x{meta['height']} {meta.get('format', '')}".rstrip())
     else:
         # Simple list
         for msg in messages:
@@ -230,7 +265,7 @@ def main():
 
     try:
         messages = filter_messages(channel, filter_type, pattern, limit)
-        display_messages(messages)
+        display_messages(messages, channel)
     except Exception as e:
         print(f"❌ Error: {str(e)}", file=sys.stderr)
         sys.exit(1)
