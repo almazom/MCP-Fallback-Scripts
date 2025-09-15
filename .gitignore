@@ -8,8 +8,8 @@
 # CREDENTIALS & SECRETS (HIGH PRIORITY)
 # ==============================================
 # Environment files with API keys and session strings
-telegram_manager.env
-*.env
+# Environment files (keep .env for unified config)
+# telegram_manager.env  # Now using unified .env
 .env.local
 .env.development
 .env.production
