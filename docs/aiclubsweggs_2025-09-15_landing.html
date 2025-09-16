@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>aiclubsweggs · 15 сентября 2025</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; font-family:'Inter',sans-serif; background:linear-gradient(160deg,#0f1115,#141820); color:#ced2d9; line-height:1.6; }
+    h1,h2,h3,h4 { font-family:'Cormorant Garamond',serif; color:#f5f5f5; letter-spacing:0.06em; margin:0; }
+    a { color:#ffe8c2; }
+    nav { position:sticky; top:0; z-index:999; display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:12px 18px; background:rgba(10,12,16,.78); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,.05); }
+    nav a { text-decoration:none; text-transform:uppercase; letter-spacing:.12em; font-size:13px; color:#ced2d9; padding:8px 16px; border-radius:999px; transition:.25s; }
+    nav a:hover, nav a.active { background:rgba(31,79,255,.2); color:#f5f5f5; box-shadow:0 18px 44px rgba(31,79,255,.25); }
+    header { padding:90px 10vw 60px; background:radial-gradient(circle at 80% 20%, rgba(31,79,255,.25), transparent 60%); position:relative; }
+    .hero-title { font-size:clamp(40px,6vw,68px); text-transform:uppercase; }
+    .hero-sub { font-size:clamp(18px,2.6vw,26px); max-width:720px; margin-top:18px; }
+    .cta-row { margin-top:36px; display:flex; gap:16px; flex-wrap:wrap; }
+    .btn { border:none; cursor:pointer; padding:14px 26px; text-transform:uppercase; letter-spacing:.08em; border-radius:999px; font-size:14px; transition:.3s; }
+    .btn-primary { background:#1f4fff; color:#fff; box-shadow:0 20px 50px rgba(31,79,255,.35); }
+    .btn-secondary { background:rgba(255,232,194,.1); color:#ffe8c2; border:1px solid rgba(255,232,194,.4); }
+    .btn:hover { transform:translateY(-4px); }
+    section { padding:80px 10vw; position:relative; }
+    section:nth-of-type(even) { background:rgba(27,32,43,.35); }
+    .section-lead { max-width:760px; font-size:18px; }
+    .two-col { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:36px; align-items:start; }
+    .quote-card,.card { background:#1c212c; border-radius:22px; padding:28px; border:1px solid rgba(255,255,255,.08); box-shadow:0 18px 42px rgba(0,0,0,.35); position:relative; }
+    .quote-card::before { content:'“'; font-size:100px; color:rgba(255,232,194,.25); position:absolute; top:-16px; left:20px; }
+    .quote-card p { font-size:20px; color:#f5f5f5; margin:0; }
+    .timeline-list { display:grid; gap:16px; }
+    .timeline-item { padding:20px 22px; border-radius:18px; background:rgba(20,24,32,.68); border:1px solid rgba(31,79,255,.16); cursor:pointer; transition:.25s; }
+    .timeline-item:hover { transform:translateY(-4px); border-color:#1f4fff; box-shadow:0 18px 50px rgba(31,79,255,.22); }
+    .timeline-item span { display:block; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#64708a; margin-bottom:6px; }
+    .gallery { margin-top:42px; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
+    .gallery figure { margin:0; border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); }
+    .gallery img { width:100%; height:220px; object-fit:cover; transition:.3s; }
+    .gallery figure:hover img { transform:scale(1.05); }
+    .gallery figcaption { padding:16px 18px 22px; font-size:14px; }
+    .steps { margin-top:38px; display:grid; gap:26px; }
+    .step { display:grid; grid-template-columns:120px 1fr; gap:20px; align-items:start; }
+    .step-badge { width:120px; height:120px; border-radius:28px; display:flex; align-items:center; justify-content:center; font-size:32px; color:#1f4fff; border:1px solid rgba(31,79,255,.25); background:rgba(31,79,255,.15); }
+    .card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:24px; margin-top:36px; }
+    .tag { display:inline-block; padding:4px 12px; border-radius:999px; background:rgba(31,79,255,.22); color:#f5f5f5; letter-spacing:.18em; font-size:11px; margin-bottom:12px; text-transform:uppercase; }
+    .media-strip { display:flex; gap:16px; overflow-x:auto; padding-bottom:10px; margin-top:32px; }
+    .media-strip img { height:180px; border-radius:18px; border:1px solid rgba(255,255,255,.08); box-shadow:0 18px 38px rgba(0,0,0,.45); }
+    .quote-highlight { background:linear-gradient(120deg,rgba(31,79,255,.2),rgba(255,232,194,.2)); border-radius:26px; padding:36px; border:1px solid rgba(255,232,194,.5); box-shadow:0 24px 62px rgba(31,79,255,.18); text-align:center; max-width:820px; margin:0 auto; }
+    footer { padding:40px 10vw 80px; text-align:center; font-size:14px; color:#64708a; }
+    .floating-actions { position:fixed; right:24px; bottom:28px; background:rgba(18,20,26,.88); border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:14px 18px; display:flex; flex-direction:column; gap:10px; box-shadow:0 24px 60px rgba(0,0,0,.45); }
+    .floating-actions button { border:none; background:none; color:#ced2d9; font-size:12px; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; text-align:left; transition:.2s; }
+    .floating-actions button:hover { color:#ffe8c2; }
+    .timeline-side { position:fixed; left:24px; top:50%; transform:translateY(-50%); background:rgba(18,20,26,.7); border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:16px; display:flex; flex-direction:column; gap:14px; box-shadow:0 20px 48px rgba(0,0,0,.35); }
+    .timeline-side button { border:none; background:none; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#64708a; cursor:pointer; transition:.2s; }
+    .timeline-side button.active { color:#1f4fff; }
+    #modal { position:fixed; inset:0; background:rgba(0,0,0,.65); display:none; align-items:center; justify-content:center; padding:40px; z-index:1000; }
+    #modal .content { width:min(680px,90vw); background:#10131a; border-radius:22px; padding:30px; border:1px solid rgba(255,255,255,.12); box-shadow:0 26px 60px rgba(0,0,0,.48); position:relative; }
+    #modal .close { position:absolute; top:12px; right:14px; border:none; background:none; color:#ced2d9; font-size:26px; cursor:pointer; }
+    @media (max-width:960px){ .timeline-side{display:none;} header,section,footer{padding-left:6vw;padding-right:6vw;} .step{grid-template-columns:1fr;} .step-badge{margin:0 auto;} .floating-actions{right:12px;bottom:16px;} }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#hero" class="active">Hero</a>
+    <a href="#theme">Тема</a>
+    <a href="#gallery">Галерея</a>
+    <a href="#tables">Таблицы</a>
+    <a href="#hardware">Железо</a>
+    <a href="#tools">Инструменты</a>
+    <a href="#signals">Сигналы</a>
+  </nav>
+  <div class="timeline-side">
+    <button data-target="#hero">00:57</button>
+    <button data-target="#theme">09:11</button>
+    <button data-target="#tables">10:31</button>
+    <button data-target="#tools">14:33</button>
+    <button data-target="#tools">18:02</button>
+    <button data-target="#signals">19:51</button>
+  </div>
+  <header id="hero">
+    <h1 class="hero-title">Memory-first OS: день 15 сентября</h1>
+    <p class="hero-sub">От облачного диска, который сам индексирует знания, до ультрарежимов reasoning — весь ритм канала aiclubsweggs в одном премиальном лонгриде.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#theme">Читать хронику</a>
+      <a class="btn btn-secondary" href="aiclubsweggs_2025-09-15.json" download>Скачать архив</a>
+    </div>
+  </header>
+  <section id="theme">
+    <h2>Главная тема — Диск-агент на S3</h2>
+    <p class="section-lead">Алексей объявил о запуске диска-агента: папки синхронизируются, индексы строятся автоматически, MCP-тулинг уже на подходе.</p>
+    <div class="two-col">
+      <div class="quote-card">
+        <p>Запустил наконец раг поверх диска с бэкендом на S3… Документы понимают таблицы, картинки и диаграммы и тут же уходят в индексы.</p>
+        <div class="cta-row" style="margin-top:24px;">
+          <button class="btn btn-secondary" data-message="72854">Пост 72854</button>
+        </div>
+      </div>
+      <div class="timeline-list">
+        <div class="timeline-item" data-message="72857"><span>09:11 · Вопрос</span>«Сколько GPU нужно? Как устроен workflow?» — аудитория просит раскрыть внутренности.</div>
+        <div class="timeline-item" data-message="72859"><span>09:19 · Ответ</span>Using Groq LPU и ASIC — базис для скоростного reasoning.</div>
+        <div class="timeline-item" data-message="72866"><span>09:27 · Масштаб</span>Long-term memory до 1 Пб при копеечной стоимости стораджа.</div>
+        <div class="timeline-item" data-message="72868"><span>09:30 · Экономика</span>«Резиновая» база: vec+FTS со стоимостью владения в 14–20 тыс. раз ниже.</div>
+        <div class="timeline-item" data-message="72863"><span>09:22 · Интерфейс</span>Файлы цепляются в чат, воркеры hidden layer колбасят индексы и MCP-сервисы.</div>
+      </div>
+    </div>
+  </section>
+  <section id="gallery">
+    <h2>Галерея «Документы оживают»</h2>
+    <p class="section-lead">PDF, которые ломали VLM, теперь проходят через HTML/JSON и SQL-пайплайн.</p>
+    <div class="gallery">
+      <figure><img src="../telegram_media/msg_72872/photo_2025-09-15_06-34-22.jpg" alt="Packing list"><figcaption>72872 · Тот самый packing list, который VLM не смогли распарсить.</figcaption></figure>
+      <figure><img src="../telegram_media/msg_72873/photo_2025-09-15_06-34-22.jpg" alt="PDF detail"><figcaption>72873 · Коллеги показали успешный прогон через свой пайплайн.</figcaption></figure>
+      <figure><img src="../telegram_media/msg_72874/photo_2025-09-15_06-34-33.jpg" alt="PDF detail 2"><figcaption>72874 · Где ломаются объединённые ячейки — визуально.</figcaption></figure>
+    </div>
+    <div class="cta-row" style="margin-top:28px;">
+      <button class="btn btn-secondary" data-message="72879">Диагноз проблемы</button>
+      <button class="btn btn-secondary" data-message="72883">Совет: HTML/JSON</button>
+      <button class="btn btn-secondary" data-message="72900">SQL-пайплайн</button>
+    </div>
+  </section>
+  <section id="tables">
+    <h2>Как приручить таблицы</h2>
+    <p class="section-lead">Пошаговый рецепт от диагностики PDF до text-to-sql и Generative UI.</p>
+    <div class="steps">
+      <div class="step"><div class="step-badge">1</div><div><h3>Проблема</h3><p>Объединённые столбцы ломают vLLM: нужно смотреть предыдущие страницы и восстанавливать пропуски.</p><button class="btn btn-secondary" data-message="72879">Читать диалог</button></div></div>
+      <div class="step"><div class="step-badge">2</div><div><h3>Предобработка</h3><p>HTML/JSON вместо Markdown, Camelot и VLM-предпроход сохраняют структуру.</p><div class="cta-row"><button class="btn btn-secondary" data-message="72883">Советы по форматам</button><button class="btn btn-secondary" data-message="72934">Два прохода</button></div></div></div>
+      <div class="step"><div class="step-badge">3</div><div><h3>Хранилище</h3><p>Все таблицы сразу в SQL с линками на оригинал, дальше text-to-sql и Generative UI.</p><button class="btn btn-secondary" data-message="72900">Описание подхода</button></div></div>
+    </div>
+  </section>
+  <section id="hardware">
+    <h2>Железный клуб</h2>
+    <p class="section-lead">AMA про Groq ASIC, FPGA и роль MCP-ресурсов.</p>
+    <div class="card-grid">
+      <article class="card"><div class="tag">История</div><h3>От чёрных ящиков до LPU</h3><p>«Делаю чёрные ящики для авиации — отсюда любовь к террабайтам даташитов и точной трассировке».</p><button class="btn btn-secondary" data-message="72883">Цикл сообщений</button></article>
+      <article class="card"><div class="tag">Q/A</div><h3>ASIC или FPGA?</h3><p>Как адаптировать ASIC под задачу и почему ПЛИС остаются промежуточным звеном.</p><div class="cta-row"><button class="btn btn-secondary" data-message="72913">Вопрос</button><button class="btn btn-secondary" data-message="72926">Ответ</button></div></article>
+      <article class="card"><div class="tag">Практика</div><h3>MCP и ресурсы</h3><p>В MCP публикуем не только тулы, но и ресурсы, чтобы память попадала в контекст модели.</p><button class="btn btn-secondary" data-message="72934">Комментарий</button></article>
+    </div>
+  </section>
+  <section id="tools">
+    <h2>Инструменты будущего</h2>
+    <p class="section-lead">Эмбед Kimi в Claude Code, обновления RepoWiki и reasoning-режимы.</p>
+    <div class="two-col">
+      <div class="card">
+        <div class="tag">Кодовые агенты</div>
+        <h3>Claude Code × Kimi K2</h3>
+        <p>«Медленный, вдумчивый, внимательный. Пока кажется хорошим архитектором».</p>
+        <img src="../telegram_media/msg_72941/photo_2025-09-15_11-33-40.jpg" alt="Claude Code" style="width:100%; border-radius:16px; margin-top:16px;">
+        <button class="btn btn-secondary" data-message="72941" style="margin-top:16px;">Пост 72941</button>
+      </div>
+      <div class="card">
+        <div class="tag">Знаниевые базы</div>
+        <h3>#repoWiki</h3>
+        <p>Свежий гайд Qoder и снимки реповика в клиенте.</p>
+        <img src="../telegram_media/msg_72944/photo_2025-09-15_13-06-43.jpg" alt="RepoWiki" style="width:100%; border-radius:16px; margin-top:16px;">
+        <div class="cta-row" style="margin-top:16px;"><a class="btn btn-secondary" href="https://docs.qoder.com/user-guide/repo-wiki" target="_blank" rel="noopener">Открыть гайд</a><button class="btn btn-secondary" data-message="72944">Пост 72944</button></div>
+      </div>
+    </div>
+    <div class="quote-card" style="margin-top:46px;">
+      <p>Чтобы Claude Code думал на максимуме, достаточно слов-триггеров вроде «ultrathink» плюс команда <code>codex --config model_reasoning_effort="high"</code>.</p>
+      <div class="cta-row" style="margin-top:18px;"><button class="btn btn-secondary" data-message="72952">Триггеры Родиона</button><button class="btn btn-secondary" data-message="72954">Гайд по режимам</button></div>
+    </div>
+  </section>
+  <section id="signals">
+    <h2>Вечерние сигналы</h2>
+    <p class="section-lead">Финальная линк-порция и визуальный wrap.</p>
+    <div class="card-grid">
+      <article class="card"><div class="tag">MoE</div><h3>Kimi K2-turbo-preview</h3><p>Mixture-of-Experts с 1T параметров и 32B активных — курс на сверхглубокий reasoning.</p><button class="btn btn-secondary" data-message="72959">Целиком</button></article>
+      <article class="card"><div class="tag">OpenAI</div><h3>Codex получает апгрейд</h3><p>Пост OpenAI об обновлениях Codex — must read.</p><a class="btn btn-secondary" href="https://openai.com/index/introducing-upgrades-to-codex/" target="_blank" rel="noopener" style="margin-top:14px;">Читать</a></article>
+    </div>
+    <div class="media-strip"><img src="../telegram_media/msg_72960/photo_2025-09-15_16-53-17.jpg" alt="Evening"><img src="../telegram_media/msg_72963/photo_2025-09-15_20-20-38.jpg" alt="Evening"><img src="../telegram_media/msg_72964/photo_2025-09-15_20-21-11.jpg" alt="Evening"></div>
+  </section>
+  <section id="final">
+    <div class="quote-highlight">
+      <h2>Цитата дня</h2>
+      <p>«Ультрамыслящие агенты требуют ультраданных — и диск-агент на S3 стал тем самым фундаментом.»</p>
+    </div>
+  </section>
+  <footer>
+    <p>Артефакты: <a href="aiclubsweggs_2025-09-15.json">архив</a> · <a href="aiclubsweggs_2025-09-15_theme_moments.md">Theme Moments</a> · <a href="aiclubsweggs_2025-09-15_focus_threads.md">Focus Threads</a>.</p>
+  </footer>
+  <div class="floating-actions">
+    <button data-message="72854">Цитата 72854</button>
+    <button onclick="window.open('aiclubsweggs_2025-09-15_theme_moments.md','_blank')">Moments</button>
+    <button onclick="window.open('aiclubsweggs_2025-09-15_focus_threads.md','_blank')">Threads</button>
+  </div>
+  <div id="modal">
+    <div class="content">
+      <button class="close" aria-label="Закрыть">×</button>
+      <h3 id="modal-title">Сообщение</h3>
+      <p id="modal-date" style="font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:#64708a;"></p>
+      <pre id="modal-text" style="white-space:pre-wrap; font-size:16px; color:#ced2d9;"></pre>
+    </div>
+  </div>
+  <script>
+    const focusData = {"72854": {"id": 72854, "date": "2025-09-15 00:57:51", "text": "Запустил наконец раг поверх диска с бэкендом на s3. Теперь диск-агент умеет жевать целые папки, синкается как гуглодрайв, и при этом документы сразу же попадают и в векторные, и в fts индексы. Всё это хранится в меркл-три с поддержкой версионирования и работает не просто по тексту, а понимает структуру документов, таблицы, картинки и интерпретирует диаграмы. Умеет в таблицы эксель, считать, искать, агрегаты и прочее, на базе text-to-sql. Агент сам выбирает тул на базе mime type по найденным файлам. Агент работает на базе SGR на модели llama-scout.\n\nПока в песочнице. На следующей неделе буду катить в прод."}, "72857": {"id": 72857, "date": "2025-09-15 09:11:48", "text": "Звучит как одна сплошная инновация!\nАлексей, можно немного технических подробностей как это все увязано вместе? Не сильно ли усложняется workflow? Какая производительность у системы с учетом постоянной синхронизации? Сколько GPU требует llama-scout или он через провайдера используется?"}, "72859": {"id": 72859, "date": "2025-09-15 09:19:02", "text": "используется Groq LPU, асики"}, "72863": {"id": 72863, "date": "2025-09-15 09:22:38", "text": "потом просто файлы и папочки подключаешь в чат. в hidden layer fs сидят воркеры и агенты которые колбасят индексы и поиск. сам диск предсотавляет api, тулинг и mcp сервис для работы с ним"}, "72866": {"id": 72866, "date": "2025-09-15 09:27:28", "text": "да. по идее можно делать long term memory до 1Пб. есть worker cluster на кубере который колбасит апдейты от Фс. при этом стоимость. ифры и стораджа копеечная."}, "72868": {"id": 72868, "date": "2025-09-15 09:30:22", "text": "по сути этакая резиновая  база данных с vec, fts поиском по структурированным документам с костами в 14200-20000 раз ниже в стоимости владения"}, "72872": {"id": 72872, "date": "2025-09-15 09:34:22", "text": "📷 [Photo] Алексей, с такими pdf-ками не сталкивался? Несколько дней бьюсь с ним, и ни одна vllm (даже топовые) не может его распарсить правильно 🤬 все путают границу страницы с границей объединенной ячейки..."}, "72879": {"id": 72879, "date": "2025-09-15 09:36:13", "text": "тут у тебя все таки больше одна строка без объединения, а там проблема, что на странице вообще может не быть значения в  3 столбце - нужно \"смотреть\" предыдущую страницу - тут vllm и ломаются..."}, "72883": {"id": 72883, "date": "2025-09-15 09:37:56", "text": "либо json либо html, никогда не подавай таблицы маркдауном"}, "72900": {"id": 72900, "date": "2025-09-15 09:50:19", "text": "вообще по мне идеальный вариант это загонять все таблицы сразу в бд со ссылкой на документ и делать извлечение через text-to-sql, что собственно я и сделал"}, "72913": {"id": 72913, "date": "2025-09-15 10:31:11", "text": "А как это делается хотя бы на пальцах. Вот есть у меня асик — как его под свою задачу адаптировать?"}, "72926": {"id": 72926, "date": "2025-09-15 11:36:11", "text": "Асик - он узкоспециализированный, и не перенастраивается.  Те, что для майнинга не подойдут. \n\nНо с учетом, что их китайцы шлепают даже под крипто неликвид, думаю, и под LLMки тоже много появится. Опыт в индустрии уже есть"}, "72934": {"id": 72934, "date": "2025-09-15 12:04:33", "text": "я такое парсил в два прохода: сначала vlm точную структуру страницы распознает, а потом обычным алгоритмом парсим логику обработки."}, "72941": {"id": 72941, "date": "2025-09-15 14:33:40", "text": "📷 [Photo] Сегодня  в Claude code с моделью moonshot Kimi k2"}, "72944": {"id": 72944, "date": "2025-09-15 16:06:43", "text": "📷 [Photo] #qoder, #repoWiki"}, "72952": {"id": 72952, "date": "2025-09-15 18:02:43", "text": "Кстати, вот тут Родион подробно разбирал тему думающих токенов и слов-триггеров для их запуска: https://t.me/ai_driven/138\n\n(вроде бы по результатам собственного реверса СС)"}, "72954": {"id": 72954, "date": "2025-09-15 18:27:02", "text": "Заставляем Claude Code думать на максимуме\n\nГотовлю доклад про Context Engineering и раскапываю на досуге разных кодовых агентов - в т. ч. Claude Code.\nСуществует ряд сложных задач, над которыми LLM сначала надо хорошенько \"подумать\" прежде, чем кодить решение (а точнее, сжечь reasoning токены) - так вот, Claude Sonnet 4 и Claude Opus 4/4.1 тоже этим навыком владеют. И многие знают, что заставить СС подумать можно просто добавив в постановку задачи текст \"think deep\". Но немногие знают, что на самом деле у клода таких думающих режимов несколько, а именно:\n        HIGHEST: 31999,\n        MIDDLE: 10000,\n        BASIC: 4000\nСправа от названия режима объем мыслетоплева thinking budget tokens для LLM.\nИ теперь самое интересное - список ключевых слов, активирующих каждый из режимов (да, они прям захардкожены):\n            HIGHEST: [{\n                pattern: \"think harder\",\n            }, {\n                pattern: \"think intensely\",\n            }, {\n                pattern: \"think longer\",\n            }, {\n                pattern: \"think really hard\",\n            }, {\n                pattern: \"think super hard\",\n            }, {\n                pattern: \"think very hard\",\n            }, {\n                pattern: \"ultrathink\",\n            }],\n            MIDDLE: [{\n                pattern: \"think about it\",\n            }, {\n                pattern: \"think a lot\",\n            }, {\n                pattern: \"think deeply\",\n            }, {\n                pattern: \"think hard\",\n            }, {\n                pattern: \"think more\",\n            }, {\n                pattern: \"megathink\",\n            }],\n            BASIC: [{\n                pattern: \"think\",\n            }]\nВ общем, достаточно запомнить ultrathink и будем вам \"самый умный режим\". Осторожно, возможно непредвиденное обжорство токенами.\n\nКстати, вот еще лайфхак как новый Codex на базе GPT-5 перевести в максимально \"думающий\" режим: codex --config model_reasoning_effort=\"high\".\n\n—\n\nА что еще вам было бы интересно про подкапотную составляющую кодовых агентов? (в т. ч. Claude Code). Есть идея добавить в наш CodeAlive режим сравнения кишочков кодовых агентов, чтобы по вопросу пользователя показывать как та или иная фича или флоу работает в разных кодагентах (например, \"как работает применение патча к файлам?\") - интересно ли было бы такое?"}, "72959": {"id": 72959, "date": "2025-09-15 19:51:42", "text": "Kimi K2-turbo-preview\n\nMixture-of-Experts (MoE) с 1 триллионом общих параметров и \n32 миллиардами активных параметров"}, "72963": {"id": 72963, "date": "2025-09-15 23:20:38", "text": "📷 [Photo]"}, "72964": {"id": 72964, "date": "2025-09-15 23:21:11", "text": "📷 [Photo]"}};
+    const navLinks = document.querySelectorAll('nav a');
+    const sections = document.querySelectorAll('section, header');
+    const timelineButtons = document.querySelectorAll('.timeline-side button');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalText = document.getElementById('modal-text');
+    const modalDate = document.getElementById('modal-date');
+    const messageButtons = document.querySelectorAll('[data-message]');
+    function smoothScroll(target){ const el=document.querySelector(target); if(el){ el.scrollIntoView({ behavior:'smooth' }); }}
+    navLinks.forEach(link=>link.addEventListener('click',e=>{ e.preventDefault(); smoothScroll(link.getAttribute('href')); }));
+    timelineButtons.forEach(btn=>btn.addEventListener('click',()=>smoothScroll(btn.dataset.target)));
+    const observer=new IntersectionObserver(entries=>{ entries.forEach(entry=>{ if(entry.isIntersecting){ const id='#'+entry.target.id; navLinks.forEach(link=>link.classList.toggle('active',link.getAttribute('href')===id)); timelineButtons.forEach(btn=>btn.classList.toggle('active',btn.dataset.target===id)); } }); },{ threshold:0.45 });
+    sections.forEach(section=>observer.observe(section));
+    function openModal(id){ const data=focusData[id]; if(!data) return; modalTitle.textContent='Сообщение '+data.id; modalDate.textContent=data.date || ''; modalText.textContent=(data.text||'').trim() || 'Нет текста'; modal.style.display='flex'; }
+    messageButtons.forEach(btn=>btn.addEventListener('click',()=>openModal(btn.dataset.message)));
+    modal.addEventListener('click',e=>{ if(e.target===modal || e.target.classList.contains('close')){ modal.style.display='none'; }});
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ modal.style.display='none'; }});
+  </script>
+</body>
+</html>
