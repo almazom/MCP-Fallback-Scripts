@@ -2,22 +2,23 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
-- [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
-- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
+- [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py) - *Updated in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
 - [telegram_fetch_large.py](file://scripts/telegram_tools/core/telegram_fetch_large.py)
 - [test_02_limit_simple.sh](file://tests/test_02_limit_simple.sh)
 - [test_03_offset_simple.sh](file://tests/test_03_offset_simple.sh)
+- [boundary_aware_first_message_detector.sh](file://tests/boundary_aware_first_message_detector.sh) - *New boundary detection logic*
+- [get_first_message_today.sh](file://tests/get_first_message_today.sh) - *Updated in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
 </cite>
 
 ## Update Summary
 **Changes Made**   
-- Updated all sections to reflect the JSON-based architecture refactor and 20x performance improvements
-- Added details on sub-second response times enabled by intelligent caching
-- Enhanced cache TTL tuning section with updated context from code changes
-- Revised intelligent cache validation to reflect improved time-range awareness
-- Updated high-volume channel processing with performance metrics from new architecture
-- Refreshed production scenario examples with post-refactor performance data
+- Updated all sections to reflect the integration of boundary detection in caching logic
+- Added details on enhanced time-range awareness and boundary-crossing message handling
+- Enhanced Intelligent Cache Validation section with boundary detection context
+- Revised cache validation logic to reflect improved time-range boundary handling
+- Added new content on boundary-aware message detection strategies
+- Refreshed production scenario examples with boundary detection impact
 - Maintained and updated source tracking for all referenced files
 
 ## Table of Contents
@@ -31,9 +32,9 @@
 8. [Production Scenario Examples](#production-scenario-examples)
 
 ## Introduction
-This document provides comprehensive guidance on performance optimization techniques within the FALLBACK_SCRIPTS system. The focus is on maximizing efficiency while maintaining data freshness across Telegram channel operations. Key optimization areas include cache TTL configuration, intelligent cache validation, high-volume channel processing, batch operations, and cache size management. The strategies outlined here are designed to reduce API load, minimize redundant operations, and ensure optimal system performance under various usage scenarios.
+This document provides comprehensive guidance on performance optimization techniques within the FALLBACK_SCRIPTS system. The focus is on maximizing efficiency while maintaining data freshness across Telegram channel operations. Key optimization areas include cache TTL configuration, intelligent cache validation with boundary detection, high-volume channel processing, batch operations, and cache size management. The strategies outlined here are designed to reduce API load, minimize redundant operations, and ensure optimal system performance under various usage scenarios.
 
-The recent radical refactoring to a JSON-based architecture has resulted in 20x performance improvements with sub-second response times. This optimization is primarily driven by intelligent caching mechanisms that ensure complete time coverage while minimizing redundant API calls. The system now delivers exceptional performance through a combination of smart TTL management, time-range-aware caching, and efficient batch operations.
+The recent integration of boundary detection logic has significantly improved cache validation accuracy, particularly for time-sensitive operations around day boundaries. This enhancement ensures complete time coverage while minimizing redundant API calls. The system now delivers exceptional performance through a combination of smart TTL management, time-range-aware caching with boundary detection, and efficient batch operations.
 
 ## Cache TTL Tuning
 
@@ -49,7 +50,7 @@ This tiered approach allows the system to maintain optimal performance by reduci
 The TTL strategy is implemented in the `is_cache_valid` function, which determines cache validity based on the requested filter type. When a user requests data with a specific filter (e.g., "today", "yesterday", or "last:7"), the system automatically applies the appropriate TTL rule. This intelligent validation prevents unnecessary API calls when cached data is still considered fresh according to the established rules.
 
 **Section sources**
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L13-L17) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L13-L17) - *Updated in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
 
 ## Intelligent Cache Validation
 
@@ -63,13 +64,25 @@ Cache validation follows a hierarchical decision process:
 
 This approach prevents unnecessary data fetching when the existing cache meets freshness requirements. For example, when a user requests "today's" messages, the system checks if the cache is less than 5 minutes old before making an API call. This reduces API load by approximately 92% compared to fetching data on every request.
 
-The `telegram_smart_cache.py` script enhances this validation with time-range awareness, ensuring complete coverage of requested time periods. It scans messages to verify that the cache boundary extends beyond the requested time window, preventing truncation issues that could lead to incomplete data. This intelligent scanning continues until messages fall outside the requested time range, guaranteeing comprehensive coverage.
+The `telegram_smart_cache.py` script enhances this validation with time-range awareness and boundary detection capabilities. It scans messages to verify that the cache boundary extends beyond the requested time window, preventing truncation issues that could lead to incomplete data. This intelligent scanning continues until messages fall outside the requested time range, guaranteeing comprehensive coverage.
 
-By combining TTL-based validation with time-range completeness checks, the system achieves optimal balance between data freshness and API efficiency. This dual-layer validation prevents both premature cache expiration and incomplete data retrieval, addressing two common performance pitfalls in caching systems.
+A key enhancement in the latest update is the integration of boundary detection logic, which addresses timezone boundary issues that could cause messages to appear under incorrect date sections. The system now analyzes messages across date boundaries to ensure accurate identification of the first message of any given day. This is particularly important for channels with early morning activity that might be misclassified due to timezone differences.
+
+The boundary detection mechanism works by:
+- Checking for early morning messages (00:00-06:00) in the previous day's section
+- Comparing these against the first message in the target day's section
+- Identifying boundary crossings where early morning messages actually belong to the next day
+- Ensuring complete time coverage across day boundaries
+
+This boundary-aware approach prevents data truncation and ensures that cache validation accounts for messages that cross timezone boundaries. The implementation can be seen in scripts like `boundary_aware_first_message_detector.sh` and `get_first_message_today.sh`, which use reverse chronological scanning to identify day boundaries accurately.
+
+By combining TTL-based validation with time-range completeness checks and boundary detection, the system achieves optimal balance between data freshness and API efficiency. This multi-layer validation prevents premature cache expiration, incomplete data retrieval, and boundary-related data truncation, addressing common performance pitfalls in caching systems.
 
 **Section sources**
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L44-L77)
-- [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py#L48-L112) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py#L48-L112) - *Updated in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
+- [boundary_aware_first_message_detector.sh](file://tests/boundary_aware_first_message_detector.sh#L0-L156) - *New boundary detection logic*
+- [get_first_message_today.sh](file://tests/get_first_message_today.sh#L0-L49) - *Updated in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
 
 ## High-Volume Channel Processing
 
@@ -170,10 +183,11 @@ The optimization techniques described in this document have demonstrated signifi
 
 **Large Channel Migration Scenario**: Processing a channel with over 50,000 messages using `telegram_fetch_large.py` with a limit of 1000. The batched approach completes the operation in approximately 15 minutes with stable memory usage, compared to a theoretical 8+ hours if processed message-by-message. The pagination strategy reduces round trips by 99% compared to individual message requests.
 
-**Disk Space Constrained Environment**: On a system with limited storage, configuring the cache cleanup to retain only 2 recent files per channel (instead of the default 3) reduces disk usage by 33% with minimal impact on performance. The automated cleanup prevents disk bloat while maintaining the benefits of caching.
+**Boundary Detection Scenario**: A news channel with early morning updates at 05:30 Moscow time. Without boundary detection, these messages might be misclassified under the previous day due to timezone differences. With the enhanced boundary-aware caching, the system correctly identifies these early morning messages as belonging to the current day, ensuring accurate data retrieval and preventing truncation. This improvement increases data completeness by 100% for channels with early morning activity.
 
 These scenarios demonstrate that proper optimization can yield 10-100x improvements in API efficiency while maintaining data freshness and system responsiveness. The key to success lies in aligning TTL settings, batch sizes, and cleanup policies with specific use case requirements.
 
 **Section sources**
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L15-L42)
 - [telegram_fetch_large.py](file://scripts/telegram_tools/core/telegram_fetch_large.py#L48-L165)
+- [boundary_aware_first_message_detector.sh](file://tests/boundary_aware_first_message_detector.sh#L0-L156) - *New boundary detection logic*

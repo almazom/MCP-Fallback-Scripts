@@ -2,18 +2,17 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in commit fe6b66826c60c2df4e9c5c05ff39cd70df425029*
-- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in commit fe6b66826c60c2df4e9c5c05ff39cd70df425029*
-- [telegram_fetch_large.py](file://scripts/telegram_tools/core/telegram_fetch_large.py) - *Modified in commit fe6b66826c60c2df4e9c5c05ff39cd70df425029*
+- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
 </cite>
 
 ## Update Summary
 **Changes Made**   
-- Updated documentation to reflect enhancements in cache cleanup logic and integration with large message fetching
-- Added context about the interaction between `telegram_fetch_large.py` and cache management
-- Verified all code examples and command usage against current implementation
-- Enhanced error handling section with insights from updated codebase
-- Added reference to new cache file naming pattern for large batch fetches
+- Updated documentation to reflect the enhanced caching system introduced in commit 31550db8e2d1547465fec0cb04d2d8118407272c
+- Clarified the role of `clean_old_caches` within the broader cache lifecycle management system
+- Verified all function behavior and command usage against current implementation
+- Enhanced explanation of cache TTL rules and their relationship to cleanup operations
+- Added context about integration with boundary detection and verification features
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -41,7 +40,7 @@ The caching system employs a standardized naming convention that enables chronol
 - `HHMMSS`: The time in hour-minute-second format
 - `.json`: The file extension indicating JSON format
 
-This naming convention is critical for the cleanup process as it allows simple lexicographic sorting to determine file age. The timestamp format ensures that newer files naturally sort after older files when using standard sorting algorithms. The structure also facilitates easy extraction of timestamp information for age calculations. For large batch fetches, an additional `_large` suffix is included in the filename to distinguish these special fetch operations.
+This naming convention is critical for the cleanup process as it allows simple lexicographic sorting to determine file age. The timestamp format ensures that newer files naturally sort after older files when using standard sorting algorithms. The structure also facilitates easy extraction of timestamp information for age calculations.
 
 ```mermaid
 flowchart TD

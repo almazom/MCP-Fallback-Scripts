@@ -7,19 +7,22 @@
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
+- [scripts/telegram_tools/core/border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py) - *Added in recent commit*
+- [scripts/telegram_tools/core/media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py) - *Added in recent commit*
+- [scripts/telegram_tools/core/content_verifier.py](file://scripts/telegram_tools/core/content_verifier.py) - *Added in recent commit*
 - [tests/comprehensive_message_analysis.sh](file://tests/comprehensive_message_analysis.sh)
-- [tests/simple_first_message_detector.sh](file://tests/simple_first_message_detector.sh)
 - [tests/boundary_aware_first_message_detector.sh](file://tests/boundary_aware_first_message_detector.sh)
 - [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh)
 </cite>
 
 ## Update Summary
 **Changes Made**   
-- Updated Core Commands Overview section to reflect JSON-based architecture changes
-- Revised Message Monitoring Workflows to account for direct Python script invocation
-- Enhanced diagram sources with updated file references
-- Added new information about modular Python scripts in automation workflows
-- Removed outdated command chaining assumptions based on refactored architecture
+- Added new section on Advanced Verification and Boundary Detection to reflect new commands
+- Updated Core Commands Overview to include new subcommands: verify-boundaries, test-boundaries, verify-content, ocr-cache
+- Enhanced Message Monitoring Workflows with boundary detection examples
+- Added new diagram for boundary detection workflow
+- Updated referenced files list to include newly added Python modules
+- Revised Common Pitfalls and Solutions to address boundary detection challenges
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -32,12 +35,13 @@
 8. [Best Practices for Production Scripts](#best-practices-for-production-scripts)
 9. [Common Pitfalls and Solutions](#common-pitfalls-and-solutions)
 10. [Comprehensive Pipeline Design](#comprehensive-pipeline-design)
+11. [Advanced Verification and Boundary Detection](#advanced-verification-and-boundary-detection)
 
 ## Introduction
 The FALLBACK_SCRIPTS toolkit provides a robust framework for scripting and automation of Telegram message monitoring and alerting workflows. This document details how to create shell scripts that chain multiple commands (fetch, filter, json, send) to build automated systems for daily digest generation, anomaly detection, and scheduled message relaying. The toolkit's modular design enables flexible pipeline construction with proper error handling, caching strategies, and integration capabilities.
 
 ## Core Commands Overview
-The telegram_manager.sh script serves as the primary interface for interacting with Telegram channels through various subcommands that can be chained together in automation workflows. Recent refactoring has introduced a JSON-based architecture that allows direct invocation of modular Python scripts.
+The telegram_manager.sh script serves as the primary interface for interacting with Telegram channels through various subcommands that can be chained together in automation workflows. Recent refactoring has introduced a JSON-based architecture that allows direct invocation of modular Python scripts. The latest update adds advanced verification commands for boundary detection and content validation.
 
 ```mermaid
 flowchart TD
@@ -47,19 +51,28 @@ E["Command: send <target> <message>"] --> F["Action: Sends message to specified 
 G["Command: json <channel> [filter]"] --> H["Action: Exports raw JSON data"]
 I["Command: cache"] --> J["Action: Shows cache information"]
 K["Command: clean [channel]"] --> L["Action: Cleans old cache files"]
-B --> M["Output: Cached JSON files in telegram_cache/"]
-D --> N["Output: Filtered message display"]
-F --> O["Output: Message delivery confirmation"]
-H --> P["Output: JSON data for processing"]
+M["Command: verify-boundaries <channel> <date>"] --> N["Action: Validates first message with 10/10 confidence"]
+O["Command: test-boundaries <channel>"] --> P["Action: Comprehensive multi-day boundary testing"]
+Q["Command: verify-content <cache_file>"] --> R["Action: Validates cache against live data"]
+S["Command: ocr-cache <channel>"] --> T["Action: Generates OCR cache for media"]
+B --> U["Output: Cached JSON files in telegram_cache/"]
+D --> V["Output: Filtered message display"]
+F --> W["Output: Message delivery confirmation"]
+H --> X["Output: JSON data for processing"]
+N --> Y["Output: Boundary verification report"]
+P --> Z["Output: Multi-day confidence scoring"]
+R --> AA["Output: Cache consistency report"]
+T --> AB["Output: OCR text cache"]
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L0-L146) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238) - *Updated in recent commit*
+- [scripts/telegram_tools/core/border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py#L0-L491) - *Added in recent commit*
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
 
 ## Message Monitoring Workflows
 The toolkit enables creation of sophisticated message monitoring workflows by chaining commands together. These workflows can be designed for various use cases including daily digest generation and anomaly detection. The recent JSON-based architecture refactor allows direct invocation of Python modules, enhancing script flexibility and performance.
@@ -85,7 +98,7 @@ Script-->>Cron : Completion
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L0-L146) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238) - *Updated in recent commit*
 
@@ -105,11 +118,11 @@ LogEvent --> End
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238) - *Updated in recent commit*
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L0-L238) - *Updated in recent commit*
 
 ## Automated Alerting Systems
@@ -134,7 +147,7 @@ RelayScript-->>Cron : Job completed
 ```
 
 **Diagram sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
 
 ## JSON Processing and Downstream Integration
 The json command enables integration with downstream processing systems by providing raw JSON output that can be parsed and analyzed.
@@ -205,7 +218,7 @@ H --> I["Run: /path/to/script.sh"]
 ```
 
 **Section sources**
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
 
 ## Error Handling in Unattended Scripts
 Proper error handling is critical for unattended scripts to ensure reliability and provide meaningful diagnostics when issues occur.
@@ -280,7 +293,7 @@ F --> H["Continue workflow"]
 
 **Section sources**
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L0-L178)
-- [telegram_manager.sh](file://telegram_manager.sh#L0-L109) - *Updated in recent commit*
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
 
 ## Common Pitfalls and Solutions
 Understanding common pitfalls helps avoid issues when developing automation scripts with the toolkit.
@@ -336,5 +349,57 @@ H --> A
 
 **Section sources**
 - [tests/comprehensive_message_analysis.sh](file://tests/comprehensive_message_analysis.sh#L0-L114)
-- [tests/simple_first_message_detector.sh](file://tests/simple_first_message_detector.sh#L0-L86)
 - [tests/boundary_aware_first_message_detector.sh](file://tests/boundary_aware_first_message_detector.sh#L0-L156)
+
+## Advanced Verification and Boundary Detection
+The toolkit now includes advanced verification commands for boundary detection and content validation, providing 10/10 confidence in message timing and content accuracy.
+
+### Boundary Detection Workflow
+The verify-boundaries command uses triple verification to detect the first message of a date with high confidence.
+
+```mermaid
+flowchart TD
+A["Start: verify-boundaries @channel 2025-09-14"] --> B["Phase 1: Broad search for date boundaries"]
+B --> C["Phase 2: Identify candidate messages"]
+C --> D["Phase 3: Triple verification (Direct, History, Iterative)"]
+D --> E{"Verification successful?"}
+E --> |Yes| F["Generate confidence score and report"]
+E --> |No| G["Retry with alternative methods"]
+F --> H["Save detailed JSON report to telegram_verification/"]
+G --> H
+H --> I["Output first message with 100% confidence"]
+```
+
+**Diagram sources**
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
+- [scripts/telegram_tools/core/border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py#L0-L491) - *Added in recent commit*
+
+### OCR Cache for Media Content
+The ocr-cache command generates and maintains OCR descriptions for media content, enabling text-based search and analysis.
+
+```mermaid
+flowchart TD
+A["ocr-cache @channel today"] --> B["Load cached messages with media"]
+B --> C["Process each media file"]
+C --> D{"File is image?"}
+D --> |Yes| E["Compute content hash"]
+D --> |No| F["Skip non-image file"]
+E --> G{"Cache entry exists and valid?"}
+G --> |Yes| H["Use cached OCR text"]
+G --> |No| I["Perform OCR with specified language"]
+I --> J["Store OCR result in media_ocr_cache.json"]
+J --> K["Return processed results"]
+H --> K
+K --> L["Display results with --display flag"]
+```
+
+**Diagram sources**
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
+- [scripts/telegram_tools/core/media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py#L0-L277) - *Added in recent commit*
+
+**Section sources**
+- [telegram_manager.sh](file://telegram_manager.sh#L0-L309) - *Updated in recent commit*
+- [scripts/telegram_tools/core/border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py#L0-L491) - *Added in recent commit*
+- [scripts/telegram_tools/core/media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py#L0-L277) - *Added in recent commit*
+- [scripts/telegram_tools/core/content_verifier.py](file://scripts/telegram_tools/core/content_verifier.py#L0-L189) - *Added in recent commit*
+- [tests/boundary_aware_first_message_detector.sh](file://tests/boundary_aware_first_message_detector.sh#L0-L156) - *Updated in recent commit*

@@ -10,6 +10,8 @@
 - [scripts/telegram_tools/core/daily_persistence.py](file://scripts/telegram_tools/core/daily_persistence.py) - *Added in recent commit for permanent daily storage*
 - [scripts/telegram_tools/core/temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py) - *Added in recent commit for message boundary anchoring*
 - [scripts/telegram_tools/core/gap_validator.py](file://scripts/telegram_tools/core/gap_validator.py) - *Added in recent commit for message completeness validation*
+- [scripts/telegram_tools/core/border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py) - *Added in recent commit for ultimate confidence boundary detection*
+- [scripts/telegram_tools/simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py) - *Added in recent commit for KISS principle boundary checking*
 - [tests/comprehensive_message_analysis.sh](file://tests/comprehensive_message_analysis.sh) - *Comprehensive analysis script*
 </cite>
 
@@ -20,6 +22,7 @@
 - Enhanced existing sections with new command examples and integration patterns
 - Updated section sources to include newly added Python modules
 - Added performance optimization details for the new persistence and anchoring systems
+- Incorporated new boundary detection and validation features from recent commits
 
 ## Table of Contents
 1. [Scripting Patterns for Message Monitoring](#scripting-patterns-for-message-monitoring)

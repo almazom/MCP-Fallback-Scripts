@@ -7,6 +7,7 @@
 - [tests/test_10_error_handling.sh](file://tests/test_10_error_handling.sh) - *Updated in recent commit*
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Added in recent commit*
 - [scripts/telegram_tools/core/temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py) - *Added in recent commit*
+- [.gitignore](file://.gitignore) - *Updated in recent commit*
 </cite>
 
 ## Update Summary
@@ -17,6 +18,7 @@
 - Updated diagram sources to reflect actual code structure
 - Added new file references for recently introduced components
 - Improved error handling and testing section with additional test coverage details
+- Incorporated security enhancements from updated `.gitignore` to prevent exposure of sensitive directories
 
 ## Table of Contents
 1. [Credential Storage Risks](#credential-storage-risks)
@@ -38,11 +40,12 @@ Storing Telegram API credentials and session strings in the `.env` file presents
 
 ## Configuration File Security
 
-The `.env` configuration file should be protected with strict file permissions to prevent unauthorized access. The recommended file permissions are 600 (read and write only for the owner) to ensure that only the executing user can read the sensitive credentials. The file should be excluded from version control systems using `.gitignore` to prevent accidental exposure. Access controls should be implemented to restrict which users and processes can read the file, and the file should be stored outside of web-accessible directories if deployed in a web environment. Regular audits should be conducted to verify that the file permissions remain secure and that no unauthorized copies exist in temporary locations.
+The `.env` configuration file should be protected with strict file permissions to prevent unauthorized access. The recommended file permissions are 600 (read and write only for the owner) to ensure that only the executing user can read the sensitive credentials. The file should be excluded from version control systems using `.gitignore` to prevent accidental exposure. As shown in the updated `.gitignore`, directories containing sensitive data such as `telegram_media/` and `telegram_verification/` are now explicitly excluded from version control. Access controls should be implemented to restrict which users and processes can read the file, and the file should be stored outside of web-accessible directories if deployed in a web environment. Regular audits should be conducted to verify that the file permissions remain secure and that no unauthorized copies exist in temporary locations.
 
 **Section sources**
 - [telegram_manager.sh](file://telegram_manager.sh#L100-L109)
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L30-L35)
+- [.gitignore](file://.gitignore#L150-L155)
 
 ## Input Validation and Injection Prevention
 

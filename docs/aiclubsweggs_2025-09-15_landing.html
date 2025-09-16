@@ -47,16 +47,14 @@
     .media-strip img { height:180px; border-radius:18px; border:1px solid rgba(255,255,255,.08); box-shadow:0 18px 38px rgba(0,0,0,.45); }
     .quote-highlight { background:linear-gradient(120deg,rgba(31,79,255,.2),rgba(255,232,194,.2)); border-radius:26px; padding:36px; border:1px solid rgba(255,232,194,.5); box-shadow:0 24px 62px rgba(31,79,255,.18); text-align:center; max-width:820px; margin:0 auto; }
     footer { padding:40px 10vw 80px; text-align:center; font-size:14px; color:#64708a; }
-    .floating-actions { position:fixed; right:24px; bottom:28px; background:rgba(18,20,26,.88); border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:14px 18px; display:flex; flex-direction:column; gap:10px; box-shadow:0 24px 60px rgba(0,0,0,.45); }
-    .floating-actions button { border:none; background:none; color:#ced2d9; font-size:12px; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; text-align:left; transition:.2s; }
-    .floating-actions button:hover { color:#ffe8c2; }
     .timeline-side { position:fixed; left:24px; top:50%; transform:translateY(-50%); background:rgba(18,20,26,.7); border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:16px; display:flex; flex-direction:column; gap:14px; box-shadow:0 20px 48px rgba(0,0,0,.35); }
     .timeline-side button { border:none; background:none; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#64708a; cursor:pointer; transition:.2s; }
     .timeline-side button.active { color:#1f4fff; }
     #modal { position:fixed; inset:0; background:rgba(0,0,0,.65); display:none; align-items:center; justify-content:center; padding:40px; z-index:1000; }
     #modal .content { width:min(680px,90vw); background:#10131a; border-radius:22px; padding:30px; border:1px solid rgba(255,255,255,.12); box-shadow:0 26px 60px rgba(0,0,0,.48); position:relative; }
     #modal .close { position:absolute; top:12px; right:14px; border:none; background:none; color:#ced2d9; font-size:26px; cursor:pointer; }
-    @media (max-width:960px){ .timeline-side{display:none;} header,section,footer{padding-left:6vw;padding-right:6vw;} .step{grid-template-columns:1fr;} .step-badge{margin:0 auto;} .floating-actions{right:12px;bottom:16px;} }
+    #modal-image { width:100%; margin-top:18px; border-radius:18px; border:1px solid rgba(255,255,255,.08); box-shadow:0 16px 42px rgba(0,0,0,.45); display:none; }
+    @media (max-width:960px){ .timeline-side{display:none;} header,section,footer{padding-left:6vw;padding-right:6vw;} .step{grid-template-columns:1fr;} .step-badge{margin:0 auto;} }
   </style>
 </head>
 <body>
@@ -82,7 +80,6 @@
     <p class="hero-sub">От облачного диска, который сам индексирует знания, до ультрарежимов reasoning — весь ритм канала aiclubsweggs в одном премиальном лонгриде.</p>
     <div class="cta-row">
       <a class="btn btn-primary" href="#theme">Читать хронику</a>
-      <a class="btn btn-secondary" href="aiclubsweggs_2025-09-15.json" download>Скачать архив</a>
     </div>
   </header>
   <section id="theme">
@@ -178,17 +175,13 @@
   <footer>
     <p>Артефакты: <a href="aiclubsweggs_2025-09-15.json">архив</a> · <a href="aiclubsweggs_2025-09-15_theme_moments.md">Theme Moments</a> · <a href="aiclubsweggs_2025-09-15_focus_threads.md">Focus Threads</a>.</p>
   </footer>
-  <div class="floating-actions">
-    <button data-message="72854">Цитата 72854</button>
-    <button onclick="window.open('aiclubsweggs_2025-09-15_theme_moments.md','_blank')">Moments</button>
-    <button onclick="window.open('aiclubsweggs_2025-09-15_focus_threads.md','_blank')">Threads</button>
-  </div>
   <div id="modal">
     <div class="content">
       <button class="close" aria-label="Закрыть">×</button>
       <h3 id="modal-title">Сообщение</h3>
       <p id="modal-date" style="font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:#64708a;"></p>
       <pre id="modal-text" style="white-space:pre-wrap; font-size:16px; color:#ced2d9;"></pre>
+      <img id="modal-image" alt="Медиа из сообщения" loading="lazy">
     </div>
   </div>
   <script>
@@ -196,17 +189,47 @@
     const navLinks = document.querySelectorAll('nav a');
     const sections = document.querySelectorAll('section, header');
     const timelineButtons = document.querySelectorAll('.timeline-side button');
+    const mediaMap = {
+      "72872": "media/aiclubsweggs_2025-09-15/msg_72872.jpg",
+      "72873": "media/aiclubsweggs_2025-09-15/msg_72873.jpg",
+      "72874": "media/aiclubsweggs_2025-09-15/msg_72874.jpg",
+      "72941": "media/aiclubsweggs_2025-09-15/msg_72941.jpg",
+      "72944": "media/aiclubsweggs_2025-09-15/msg_72944.jpg",
+      "72960": "media/aiclubsweggs_2025-09-15/msg_72960.jpg",
+      "72963": "media/aiclubsweggs_2025-09-15/msg_72963.jpg",
+      "72964": "media/aiclubsweggs_2025-09-15/msg_72964.jpg"
+    };
     const modal = document.getElementById('modal');
     const modalTitle = document.getElementById('modal-title');
     const modalText = document.getElementById('modal-text');
     const modalDate = document.getElementById('modal-date');
+    const modalImage = document.getElementById('modal-image');
     const messageButtons = document.querySelectorAll('[data-message]');
     function smoothScroll(target){ const el=document.querySelector(target); if(el){ el.scrollIntoView({ behavior:'smooth' }); }}
     navLinks.forEach(link=>link.addEventListener('click',e=>{ e.preventDefault(); smoothScroll(link.getAttribute('href')); }));
     timelineButtons.forEach(btn=>btn.addEventListener('click',()=>smoothScroll(btn.dataset.target)));
     const observer=new IntersectionObserver(entries=>{ entries.forEach(entry=>{ if(entry.isIntersecting){ const id='#'+entry.target.id; navLinks.forEach(link=>link.classList.toggle('active',link.getAttribute('href')===id)); timelineButtons.forEach(btn=>btn.classList.toggle('active',btn.dataset.target===id)); } }); },{ threshold:0.45 });
     sections.forEach(section=>observer.observe(section));
-    function openModal(id){ const data=focusData[id]; if(!data) return; modalTitle.textContent='Сообщение '+data.id; modalDate.textContent=data.date || ''; modalText.textContent=(data.text||'').trim() || 'Нет текста'; modal.style.display='flex'; }
+    function openModal(id){
+      const data=focusData[id];
+      if(!data) return;
+      modalTitle.textContent='Сообщение '+data.id;
+      modalDate.textContent=data.date || '';
+      const text=(data.text||'').trim();
+      modalText.textContent=text || 'Нет текста';
+      modalText.scrollTop=0;
+      const mediaSrc=mediaMap[id];
+      if(mediaSrc){
+        modalImage.src=mediaSrc;
+        const alt=text.replace(/^📷\s*\[Photo\]\s*/,'').trim();
+        modalImage.alt=alt || 'Медиа из сообщения '+data.id;
+        modalImage.style.display='block';
+      } else {
+        modalImage.removeAttribute('src');
+        modalImage.style.display='none';
+      }
+      modal.style.display='flex';
+    }
     messageButtons.forEach(btn=>btn.addEventListener('click',()=>openModal(btn.dataset.message)));
     modal.addEventListener('click',e=>{ if(e.target===modal || e.target.classList.contains('close')){ modal.style.display='none'; }});
     document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ modal.style.display='none'; }});

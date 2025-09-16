@@ -3,20 +3,22 @@
 <cite>
 **Referenced Files in This Document**  
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in recent commit*
-- [telegram_fetch_large.py](file://scripts/telegram_tools/core/telegram_fetch_large.py) - *Updated in recent commit*
-- [anchors.json](file://telegram_cache/anchors.json) - *Updated in recent commit*
 - [telegram_manager.sh](file://telegram_manager.sh) - *Modified in recent commit*
+- [boundary_detector.py](file://scripts/telegram_tools/boundary_detector.py) - *Added in recent commit*
+- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py) - *Added in recent commit*
 - [test_05_date_today.sh](file://tests/test_05_date_today.sh)
 </cite>
 
 ## Update Summary
 **Changes Made**  
-- Updated TTL rules and filter type logic to reflect current implementation in `telegram_cache.py`
-- Corrected and enhanced the cache validation mechanism description based on actual code behavior
-- Added clarification on command-line interface usage for cache operations
-- Verified integration points with `telegram_manager.sh` for accuracy
+- Updated cache validation mechanism to include boundary detection integration
+- Added new section on boundary detection system and its role in cache validation
+- Enhanced TTL rules explanation with integration context
+- Updated integration section to reflect boundary detection workflow
+- Added troubleshooting steps for boundary-related cache issues
+- Updated recovery procedures to include boundary verification commands
+- Added new diagram showing boundary detection integration
 - Removed outdated references and ensured all examples match current code
-- Incorporated changes from recent commit affecting anchor data and fetch validation logic
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -24,9 +26,10 @@
 3. [TTL Rules and Filter Types](#ttl-rules-and-filter-types)
 4. [Timestamp Extraction and Age Calculation](#timestamp-extraction-and-age-calculation)
 5. [Integration with Telegram Manager](#integration-with-telegram-manager)
-6. [Common Issues and Troubleshooting](#common-issues-and-troubleshooting)
-7. [Recovery Procedures](#recovery-procedures)
-8. [Conclusion](#conclusion)
+6. [Boundary Detection System](#boundary-detection-system)
+7. [Common Issues and Troubleshooting](#common-issues-and-troubleshooting)
+8. [Recovery Procedures](#recovery-procedures)
+9. [Conclusion](#conclusion)
 
 ## Introduction
 
@@ -200,6 +203,51 @@ FetchNew --> CLI
 **Section sources**
 - [telegram_manager.sh](file://telegram_manager.sh#L27-L42)
 
+## Boundary Detection System
+
+The recent enhancement integrates boundary detection into the cache validation logic to improve accuracy and prevent data truncation. The system now includes a sophisticated boundary detection mechanism that verifies cache completeness and freshness beyond simple TTL checks.
+
+The boundary detection system consists of:
+- **Simple boundary check**: Basic staleness verification using `simple_boundary_check.py`
+- **Sophisticated boundary detection**: Advanced analysis using `boundary_detector.py` that checks both temporal boundaries and message completeness
+- **Triple verification**: Uses three different Telegram API methods to ensure 100% confidence in boundary detection
+
+Key features of the boundary detection system:
+- Checks if the latest message in cache is still current
+- Verifies if there are messages before the earliest cached message
+- Performs expansion when boundaries are found to be stale
+- Generates detailed verification reports with confidence scoring
+- Integrates with Moscow timezone-aware date handling
+
+The system is accessible through the `telegram_manager.sh` script with commands:
+- `verify-boundaries`: Ultimate boundary detection with triple verification
+- `test-boundaries`: Comprehensive multi-day boundary testing
+- `verify-content`: Verify cache against live data with auto-correction
+
+```mermaid
+graph TD
+A[User Request] --> B[Cache Validation]
+B --> C{Cache Valid?}
+C --> |Yes| D[Use Cached Data]
+C --> |No| E[Boundary Detection]
+E --> F[Check Live Boundaries]
+F --> G{Boundaries Fresh?}
+G --> |Yes| H[Update Cache]
+G --> |No| I[Smart Cache Expansion]
+I --> J[Save Expanded Cache]
+J --> K[Return Data]
+H --> K
+D --> K
+```
+
+**Diagram sources**
+- [boundary_detector.py](file://scripts/telegram_tools/boundary_detector.py#L1-L50)
+- [telegram_manager.sh](file://telegram_manager.sh#L27-L42)
+
+**Section sources**
+- [boundary_detector.py](file://scripts/telegram_tools/boundary_detector.py#L1-L50)
+- [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py#L1-L10)
+
 ## Common Issues and Troubleshooting
 
 Several common issues can affect cache validation, along with their troubleshooting steps:
@@ -240,10 +288,24 @@ Several common issues can affect cache validation, along with their troubleshoot
 - Check that the most recent cache file is being selected
 - Confirm the validation result is properly interpreted by the manager script
 
+### 4. Boundary Detection Issues
+**Symptoms**: Cache appears valid but missing recent messages  
+**Causes**:
+- Boundary detection not properly configured
+- Telegram API connectivity issues
+- Message ID gaps in the sequence
+
+**Troubleshooting**:
+- Run `./telegram_manager.sh verify-boundaries <channel> <date>` to check boundaries
+- Verify Telegram API credentials in `.env` file
+- Check network connectivity to Telegram servers
+- Review boundary detection logs in `./telegram_verification/`
+
 **Section sources**
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L19-L30)
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L32-L57)
 - [telegram_manager.sh](file://telegram_manager.sh#L33-L38)
+- [boundary_detector.py](file://scripts/telegram_tools/boundary_detector.py#L1-L50)
 
 ## Recovery Procedures
 
@@ -279,7 +341,20 @@ Bypass cache validation and retrieve fresh data:
 ./telegram_manager.sh read aiclubsweggs clean_cache
 ```
 
-### 4. Systematic Verification
+### 4. Boundary Verification
+Verify and correct cache boundaries:
+```bash
+# Run boundary verification
+./telegram_manager.sh verify-boundaries aiclubsweggs 2025-09-14
+
+# Test boundaries across multiple days
+./telegram_manager.sh test-boundaries aiclubsweggs 2025-09-14 7
+
+# Verify cache content against live data
+./telegram_manager.sh verify-content telegram_cache/aiclubsweggs_20250915_224022.json --auto-correct
+```
+
+### 5. Systematic Verification
 Use test scripts to verify date handling:
 ```bash
 # Run date calculation tests
@@ -292,7 +367,8 @@ These procedures ensure reliable recovery from cache validation issues while mai
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L60-L100)
 - [telegram_manager.sh](file://telegram_manager.sh#L50-L55)
 - [test_05_date_today.sh](file://tests/test_05_date_today.sh#L1-L52)
+- [boundary_detector.py](file://scripts/telegram_tools/boundary_detector.py#L1-L50)
 
 ## Conclusion
 
-The cache validation mechanism provides an intelligent balance between data freshness and system efficiency. By implementing tiered TTL rules based on filter types and accurately calculating cache age from filenames, the system minimizes unnecessary API calls while ensuring users receive timely information. The integration with the telegram_manager.sh script creates a seamless user experience, automatically handling cache validation behind the scenes. Understanding the TTL rules, timestamp extraction process, and troubleshooting procedures enables effective maintenance and optimization of the caching system.
+The cache validation mechanism provides an intelligent balance between data freshness and system efficiency. By implementing tiered TTL rules based on filter types and accurately calculating cache age from filenames, the system minimizes unnecessary API calls while ensuring users receive timely information. The integration with the telegram_manager.sh script creates a seamless user experience, automatically handling cache validation behind the scenes. The enhanced boundary detection system adds an additional layer of verification to ensure cache completeness and prevent data truncation. Understanding the TTL rules, timestamp extraction process, boundary detection workflow, and troubleshooting procedures enables effective maintenance and optimization of the caching system.

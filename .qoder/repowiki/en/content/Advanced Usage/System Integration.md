@@ -5,8 +5,10 @@
 - [telegram_json_export.py](file://scripts/telegram_tools/core/telegram_json_export.py) - *Updated in recent commit for JSON-based architecture*
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Updated in recent commit for enhanced filtering and border detection*
 - [telegram_manager.sh](file://telegram_manager.sh) - *Modified to support new integration features*
-- [telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py) - *Core fetching functionality*
-- [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Cache management and TTL policies*
+- [border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py) - *Added in recent commit for 10/10 confidence boundary detection*
+- [content_verifier.py](file://scripts/telegram_tools/core/content_verifier.py) - *Added in recent commit for cache validation*
+- [temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py) - *Added in recent commit for temporal anchoring*
+- [gap_validator.py](file://scripts/telegram_tools/core/gap_validator.py) - *Added in recent commit for message completeness validation*
 </cite>
 
 ## Update Summary
@@ -16,6 +18,7 @@
 - Added details about fallback border detection and auto-fetching mechanisms
 - Refreshed code examples to match current implementation
 - Updated diagram sources to reflect actual code structure changes
+- Added new sections for advanced verification commands and boundary validation
 
 ## Table of Contents
 1. [Introduction](#introduction)

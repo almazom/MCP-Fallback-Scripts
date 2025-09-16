@@ -2,19 +2,23 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
+- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
 - [test_10_error_handling.sh](file://tests/test_10_error_handling.sh) - *Updated in commit 898f67f0bc3706c22d094da17d505fa20e945141*
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py)
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py)
+- [scripts/telegram_tools/core/border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py) - *Added in commit 31550db8e2d1547465fec0cb04d2d8118407272c*
 </cite>
 
 ## Update Summary
 **Changes Made**   
-- Updated documentation to reflect the JSON-based architecture refactoring
-- Enhanced error handling description to show distributed responsibility between bash and Python components
-- Updated test case references to align with current implementation
-- Added clarification on network-related error handling limitations
+- Added new section on Advanced Boundary Detection with 10/10 confidence system
+- Updated Common Failure Modes to include boundary detection failures
+- Enhanced Message Ordering & Border Detection section with triple verification details
+- Added documentation for new `verify-boundaries` and `test-boundaries` commands
+- Updated Python Error Propagation section to include border_message_validator.py
+- Added new diagram for 10/10 confidence boundary detection workflow
+- Updated Section sources to include new border_message_validator.py file
 - Maintained and updated source tracking annotations for all referenced files
 
 ## Table of Contents
@@ -25,6 +29,7 @@
 5. [Message Ordering & Border Detection](#message-ordering--border-detection)
 6. [Error Scenario Testing](#error-scenario-testing)
 7. [Recovery & Resilience](#recovery--resilience)
+8. [Advanced Boundary Detection](#advanced-boundary-detection)
 
 ## Common Failure Modes
 
@@ -35,6 +40,7 @@ The system is designed to handle several common failure scenarios:
 - **Cache Corruption**: Invalid JSON, missing cache files, or stale data
 - **Invalid Parameters**: Incorrect channel names, malformed date ranges, out-of-bounds limits
 - **Input Injection Attempts**: Malicious inputs containing shell commands or special characters
+- **Boundary Detection Failures**: Inaccurate first message identification due to timezone issues or message gaps
 
 These failure modes are systematically validated through comprehensive testing and defensive programming practices. The recent refactoring to a JSON-based architecture has distributed error handling responsibilities between the bash wrapper and Python components, improving modularity and error context preservation.
 
@@ -86,6 +92,7 @@ Errors are formatted with emoji indicators for quick visual recognition and incl
 - [scripts/telegram_tools/core/telegram_fetch.py](file://scripts/telegram_tools/core/telegram_fetch.py#L14-L146)
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L25-L29)
 - [scripts/telegram_tools/core/telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L60-L88)
+- [scripts/telegram_tools/core/border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py#L1-L492)
 
 ## Troubleshooting Workflows
 
@@ -210,3 +217,51 @@ These features ensure the system maintains reliability even under adverse condit
 **Section sources**
 - [scripts/telegram_tools/core/telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L25-L178)
 - [telegram_manager.sh](file://telegram_manager.sh#L25-L50)
+
+## Advanced Boundary Detection
+
+The system now features a 10/10 confidence boundary detection system with triple verification:
+
+```mermaid
+flowchart TD
+Start([10/10 Confidence Boundary Detection]) --> Phase1["Phase 1: Broad Search"]
+Start --> Phase2["Phase 2: Boundary Verification"]
+Start --> Phase3["Phase 3: Triple Verification"]
+Phase1 --> Method1["Direct message fetch"]
+Phase1 --> Method2["History search"]
+Phase1 --> Method3["Iterative search"]
+Phase2 --> Check["Verify no earlier messages exist"]
+Phase3 --> Validate["Cross-validate with 3 methods"]
+Validate --> Score["Confidence Score: methods_successful/3"]
+Score --> Report["Generate JSON verification report"]
+Report --> Save["Save to telegram_verification/"]
+Save --> Output["Return first message with confidence score"]
+```
+
+**Diagram sources**
+- [scripts/telegram_tools/core/border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py#L1-L492)
+
+**Section sources**
+- [scripts/telegram_tools/core/border_message_validator.py](file://scripts/telegram_tools/core/border_message_validator.py#L1-L492)
+- [telegram_manager.sh](file://telegram_manager.sh#L2-L109)
+
+The new `verify-boundaries` command provides ultimate boundary detection with triple verification:
+- Uses 3 different Telegram API methods to verify message existence
+- Generates confidence scores (0-100%) based on verification success
+- Downloads and verifies media content with SHA-256 hashes
+- Creates detailed JSON reports in `telegram_verification/` directory
+- Supports Moscow timezone-aware date handling
+
+Key features:
+- **Triple Verification**: Combines direct fetch, history search, and iterative search
+- **Confidence Scoring**: 100% = perfect verification (3/3 methods successful)
+- **Media Verification**: Automatic media download with content hash validation
+- **Cross-Validation**: Compare cached vs live data with `verify-boundaries-cache`
+- **Comprehensive Testing**: Use `test-boundaries` for multi-day confidence testing
+
+The system generates detailed verification reports including:
+- Confidence scores and verification methods used
+- Media download status and content hashes
+- Boundary detection phases and candidate analysis
+- Cross-validation results against live data
+- Performance metrics and timing information

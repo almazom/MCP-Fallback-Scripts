@@ -8,6 +8,7 @@
 - [boundary_aware_first_message_detector.sh](file://tests/boundary_aware_first_message_detector.sh)
 - [timezone_aware_first_message_detector.sh](file://tests/timezone_aware_first_message_detector.sh)
 - [test_first_message_border_detection.sh](file://tests/test_first_message_border_detection.sh)
+- [media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py) - *Integrated for OCR functionality in filtering*
 </cite>
 
 ## Update Summary
@@ -17,6 +18,7 @@
 - Added timezone-aware validation details in border detection
 - Updated code examples and flowchart to match current implementation
 - Improved cache validation interface details
+- Integrated OCR cache functionality into message filtering process
 
 ## Table of Contents
 1. [Introduction](#introduction)

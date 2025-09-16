@@ -423,8 +423,41 @@ api_endpoints.json
 service_urls.json
 
 # ==============================================
+# MEDIA FILES (PROJECT ROOT)
+# ==============================================
+# Image files in project root
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.svg
+*.webp
+*.ico
+
+# Video files in project root
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+*.mkv
+
+# Audio files in project root
+*.mp3
+*.wav
+*.flac
+*.aac
+*.ogg
+*.wma
+
+# ==============================================
 # ALLOWED FILES (EXCEPTIONS)
 # ==============================================
 # Note: Files that should be committed despite patterns
 # !important_template_file.json
 # !README.md
+image.png
+image.png

@@ -4,24 +4,23 @@
 **Referenced Files in This Document**   
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py) - *Updated in recent commit with TTL rules and cleanup logic*
 - [telegram_smart_cache.py](file://scripts/telegram_tools/telegram_smart_cache.py) - *Added in recent commit with smart caching implementation*
+- [media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py) - *Added in recent commit with OCR caching functionality*
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py) - *Modified to support cache validation and border detection*
 - [simple_boundary_check.py](file://scripts/telegram_tools/simple_boundary_check.py) - *New utility for basic cache freshness checks*
 - [telegram_fetch_large.py](file://scripts/telegram_tools/core/telegram_fetch_large.py) - *Updated in recent commit with improved cache handling*
-- [telegram_manager.sh](file://telegram_manager.sh) - *Updated in recent commit with optimized cache handling*
 - [anchors.json](file://telegram_cache/anchors.json) - *Updated in recent commit with new anchor data*
 </cite>
 
 ## Update Summary
 **Changes Made**   
-- Updated TTL-based cache invalidation strategy with new filter type handling
-- Enhanced cache freshness validation logic based on updated `is_cache_valid` function
-- Added details on smart cache mechanism implementation from `telegram_smart_cache.py`
-- Included new information about boundary detection and auto-fetch logic in filtering
-- Updated cache lifecycle management with new command-line interface details
-- Added new section on simple boundary check utility
+- Added new section on OCR media caching with `media_ocr_cache.py`
+- Updated component interactions to include OCR cache integration
+- Enhanced common issues section with OCR-specific error handling
+- Added OCR cache lifecycle details to cache lifecycle management
+- Updated referenced files list to include new `media_ocr_cache.py`
 - Removed outdated references to non-existent files and corrected file paths
 - Updated cache management in `telegram_manager.sh` with improved cache handling logic
-- Added information about temporal anchors and anchor data management
+- Added information about OCR cache file structure and metadata
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -35,7 +34,8 @@
 9. [Common Issues and Recovery Procedures](#common-issues-and-recovery-procedures)
 10. [Simple Boundary Check Utility](#simple-boundary-check-utility)
 11. [Temporal Anchors and Boundary Detection](#temporal-anchors-and-boundary-detection)
-12. [Conclusion](#conclusion)
+12. [OCR Media Caching](#ocr-media-caching)
+13. [Conclusion](#conclusion)
 
 ## Introduction
 The caching system in this Telegram message processing framework is designed to optimize performance by minimizing redundant API calls while ensuring data freshness. The system implements an intelligent caching strategy that balances efficiency with accuracy, particularly important when dealing with time-sensitive message data. This document details the architecture, implementation, and operational characteristics of the caching system, focusing on its TTL-based invalidation, smart fetching mechanisms, and integration with other components in the workflow.
@@ -211,25 +211,31 @@ A[telegram_manager.sh] --> B[telegram_filter.py]
 A --> C[telegram_cache.py]
 A --> D[telegram_smart_cache.py]
 A --> E[telegram_fetch.py]
+A --> F[media_ocr_cache.py]
 B --> C: check cache validity
 B --> E: fetch if stale
-C --> F[Cache Directory]
-D --> F
-E --> F
-D --> G[.env credentials]
+C --> G[Cache Directory]
+D --> G
 E --> G
-B --> H[Display]
+F --> G
+D --> H[.env credentials]
+E --> H
+F --> H
+B --> I[Display]
 style A fill:#f9f,stroke:#333
 style C fill:#bbf,stroke:#333
+style F fill:#f96,stroke:#333
 ```
 
 **Diagram sources**
 - [telegram_manager.sh](file://telegram_manager.sh#L1-L110)
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
+- [media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py#L1-L277)
 
 **Section sources**
 - [telegram_manager.sh](file://telegram_manager.sh#L1-L110)
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
+- [media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py#L1-L277)
 
 ## Smart Cache Mechanism Implementation
 The smart caching mechanism, implemented in `telegram_smart_cache.py`, addresses the challenge of ensuring complete time range coverage when fetching messages from Telegram. Unlike simple pagination, this mechanism scans messages until it confirms that the complete time range has been captured, preventing truncation issues.
@@ -308,6 +314,19 @@ The caching system addresses several common issues that can arise in message pro
 
 **Boundary Detection Issues**: The system includes sophisticated border detection logic in the filtering module that validates the integrity of date-based filters. When insufficient messages are available for proper boundary validation, the system automatically triggers additional data fetching to ensure accurate results.
 
+**OCR Processing Issues**: The OCR caching system handles several potential issues:
+- Missing dependencies (Pillow, pytesseract)
+- File not found errors
+- Unsupported image formats
+- OCR processing errors
+- Cache staleness for updated media files
+
+Recovery procedures for OCR issues include:
+1. For stale OCR data: Re-run with --refresh flag
+2. For missing dependencies: Install required packages
+3. For file access issues: Verify media file paths and permissions
+4. For format issues: Convert to supported image formats
+
 **Recovery Procedures**:
 1. For stale data: Automatic refresh via TTL validation
 2. For incomplete data: Auto-fetch additional messages during filtering
@@ -319,6 +338,7 @@ The system also provides diagnostic tools like the cache information display and
 **Section sources**
 - [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L44-L99)
 - [telegram_cache.py](file://scripts/telegram_tools/core/telegram_cache.py#L109-L148)
+- [media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py#L1-L277)
 
 ## Simple Boundary Check Utility
 A new utility script, `simple_boundary_check.py`, has been introduced to provide basic cache freshness checking with a simple interface. This script implements a KISS (Keep It Simple, Stupid) principle approach to cache validation, checking if the most recent cache file is older than a specified maximum age.
@@ -374,6 +394,54 @@ Fetch->>Cache : store messages
 **Section sources**
 - [temporal_anchor.py](file://scripts/telegram_tools/core/temporal_anchor.py#L1-L482)
 - [anchors.json](file://telegram_cache/anchors.json)
+
+## OCR Media Caching
+The system now includes specialized caching for OCR (Optical Character Recognition) processing of Telegram media assets through the `media_ocr_cache.py` module. This component addresses the computational expense of OCR processing by caching results and only reprocessing when media content changes.
+
+The OCR caching system:
+- Stores OCR results in a dedicated JSON file (`media_ocr_cache.json`)
+- Uses content hashing to detect changes in media files
+- Supports multiple OCR languages (default: rus+eng)
+- Integrates with message filtering to display OCR results
+- Handles common OCR processing errors and dependencies
+
+The cache structure includes:
+- **content_hash**: SHA-256 hash of the media file
+- **ocr_text**: Extracted text content
+- **error**: Processing error messages if OCR failed
+- **image_metadata**: Image dimensions and format
+- **updated_at**: Timestamp of last processing
+
+The system automatically checks for existing OCR results and only reprocesses when the media file content has changed or when explicitly requested with the --refresh flag.
+
+```mermaid
+sequenceDiagram
+participant User
+participant Filter as telegram_filter.py
+participant OCR as media_ocr_cache.py
+participant Media as Telegram Media
+User->>Filter : Request messages with media
+Filter->>Filter : Load cached messages
+Filter->>OCR : Request OCR data for media
+OCR->>OCR : Check content hash
+alt Hash unchanged
+OCR-->>Filter : Return cached OCR text
+else Hash changed or missing
+OCR->>Media : Process image with Tesseract
+Media-->>OCR : OCR result
+OCR->>OCR : Update cache
+OCR-->>Filter : Return new OCR text
+end
+Filter->>User : Display messages with OCR text
+```
+
+**Diagram sources**
+- [media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py#L1-L277)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
+
+**Section sources**
+- [media_ocr_cache.py](file://scripts/telegram_tools/core/media_ocr_cache.py#L1-L277)
+- [telegram_filter.py](file://scripts/telegram_tools/core/telegram_filter.py#L1-L238)
 
 ## Conclusion
 The caching system provides a robust foundation for efficient Telegram message processing, balancing performance optimization with data accuracy. Through its intelligent TTL-based invalidation, smart fetching mechanisms, and comprehensive lifecycle management, the system effectively reduces API calls while ensuring data freshness. The modular design allows for both simple caching operations and sophisticated time-range-aware fetching, making it adaptable to various use cases. The integration with filtering and management components creates a cohesive workflow that handles common issues like stale data and boundary detection automatically, providing a reliable foundation for message analysis and processing.
