@@ -73,6 +73,49 @@ async def send_message():
 asyncio.run(send_message())
 " "$2" "$3"
         ;;
+    send_file)
+        [[ -z "${2:-}" ]] || [[ -z "${3:-}" ]] && echo "Usage: $0 send_file <target> <file_path> [caption]" && exit 1
+        python3 -c "
+import asyncio
+import sys
+import os
+from pathlib import Path
+from telethon import TelegramClient
+from telethon.sessions import StringSession
+
+async def send_file_to_telegram():
+    # Use the script directory to find .env
+    script_dir = Path('$SCRIPT_DIR')
+    env_file = script_dir / '.env'
+
+    creds = {}
+    with open(env_file, 'r') as f:
+        for line in f:
+            if '=' in line and not line.startswith('#'):
+                key, value = line.strip().split('=', 1)
+                creds[key] = value.strip('\"')
+
+    client = TelegramClient(StringSession(creds['TELEGRAM_SESSION']),
+                          int(creds['TELEGRAM_API_ID']), creds['TELEGRAM_API_HASH'])
+    await client.connect()
+
+    # Get file path and optional caption
+    file_path = '$3'
+    caption = '${4:-📎 File attached}'
+
+    # Check if file exists
+    if not Path(file_path).exists():
+        print(f'❌ File not found: {file_path}')
+        await client.disconnect()
+        return
+
+    await client.send_file('$2', file_path, caption=caption)
+    await client.disconnect()
+    print(f'✅ File sent successfully: {Path(file_path).name}')
+
+asyncio.run(send_file_to_telegram())
+" "$2" "$3" "${4:-}"
+        ;;
     cache)
         cd "$TELEGRAM_DIR" && python3 telegram_cache.py info
         ;;
@@ -208,6 +251,7 @@ BASIC COMMANDS:
   fetch <channel> [limit]                    Fetch messages from Telegram
   read <channel> [filter] [--clean]         Read cached messages (--clean to clear cache first)
   send <target> <message>                   Send message
+  send_file <target> <file_path> [caption]  Send file attachment
   json <channel> [filter] [--summary|--full] Export raw JSON
   cache                                     Show cache info
   clean [channel]                           Clean old cache
@@ -238,6 +282,7 @@ BASIC EXAMPLES:
   ./telegram_manager.sh read aiclubsweggs today --clean
   ./telegram_manager.sh json aiclubsweggs yesterday --summary
   ./telegram_manager.sh send @almazom "Hello"
+  ./telegram_manager.sh send_file @almazom /path/to/file.pdf "📎 Document attached"
 
 VERIFICATION EXAMPLES (10/10 CONFIDENCE SYSTEM):
   # Ultimate boundary detection with triple verification + media download
